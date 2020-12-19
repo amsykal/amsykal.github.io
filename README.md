@@ -1,0 +1,2 @@
+# amsykal.github.io
+home
