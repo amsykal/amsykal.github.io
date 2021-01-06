@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Henon Map</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Henon Map</h1>
+<p class="meta">01 Jan 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>James Gleick, Chaos: Making a New Science: “But unpredictability was not the reason physicists and mathematicians began taking pendulums seriously again in the sixties and seventies. Unpredictability was only the attention-grabber. Those studying chaotic dynamics discovered that the disorderly behavior of simple systems acted as a creative process. It generated complexity: richly organized patterns, sometimes stable and sometimes unstable, sometimes finite and sometimes infinite, but always with the fascination of living things. That was why scientists played with toys.”</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/006a.png" /><br />
+<img src="/images/006b.png" /><br />
+<img src="/images/006c.png" /><br />
+<img src="/images/006d.png" /><br />
+<img src="/images/006e.png" /><br />
+<img src="/images/006f.png" /><br />
+<img src="/images/006g.png" /><br />
+<img src="/images/006h.png" /><br />
+<img src="/images/006i.png" /><br />
+<img src="/images/006j.png" /><br />
+<img src="/images/006k.png" /><br />
+<img src="/images/006l.png" /><br />
+<img src="/images/006m.png" /></p>
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//http://www.complexification.net/gallery/machines/henonPhase/
+//http://paulbourke.net/fractals/henonphase/
+//https://mathworld.wolfram.com/HenonMap.html
+// henon phase is a strange attractor (chaos theory)
+
+// number of iterations
+let c = 1000;
+// each angle gives a different image
+let angle;
+// array to store points in the final image
+let henons = [];
+// color palette
+let colors = [];
+
+// some values of 'angle' and corresponding scaling factor that give good images
+//0.9342725906771222, 400
+//5.391262433494741, 400
+//2.7919038736981934, 200
+// 1.6, 250
+//3.703635470629848, 250
+//1.401833965519098, 250
+//0.4791091265567063
+//3.5617524930438464, 200
+//1.2898632053310408, 260
+//3.191261030344313, 200
+//5.200390764686796, 400
+//3.713825392598408, 260
+//4.817617182430413, 400
+//-10,200
+
+// function to get points on the image
+function makeHenons(){
+  henons.length = 0;
+  henons = [];
+  for (let k = 0; k &lt; c; k++){
+    henon = new PointObj();
+    henons.push(henon);
+  };
+}
+
+
+function setup()
+{
+  createCanvas(800,800);
+  angle = 4.817617182430413;
+  // using different palettes for different sketches
+  colors = [color(86, 163, 166),color(72, 69, 56),color(02, 212, 157),
+            color(212, 234, 200),color(192, 216, 224)];
+  //colors = [color(243, 198, 119),color(123, 30, 122),
+  //          color(179, 63, 98),color(249, 86, 79)];
+   //colors = [color( 217, 229, 214),color(0, 167, 225),color(237, 222, 164),
+  //           color(247, 160, 114),color(255, 155, 66)];
+  makeHenons();
+  // change background according to palette chosen
+  background(250);
+}
+
+function draw()
+{
+  // for every point on the henon[] display it and update
+  // to new location based on henon phase equation
+  push();
+  translate(0.5*width,0.5*height)
+  for (let k = 0; k &lt; henons.length; k++){
+    henons[k].show();
+    henons[k].update();
+  }
+
+  pop();
+
+}
+</code></pre></div></div>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class PointObj{
+  constructor(){
+    // get a random point in a grid (-1 to 1 along both x and y)
+    this.x = random(-1,1);
+    this.y = random(-1,1);
+    this.k = 0;
+    this.X = 0;
+    this.Y = 0;
+    // scaling factor
+    this.f  = 400;
+    // give the point a random color
+    this.cl = random(colors);
+  }
+
+  show(cx,cy){
+    // set color,alpha and display point , many points so low alpha
+    let cl = this.cl;
+    cl.setAlpha(20);
+    stroke(cl);
+    fill(cl);
+    ellipse(this.X,this.Y,1,1);
+
+  }
+
+  // get new location of point based on phase equation
+  update(){
+    this.k = pow(this.y,1) - pow(this.x,2);
+    this.y = (this.x * sin(angle)) + (this.k * cos(angle));
+    this.x = (this.x * cos(angle)) - (this.k * sin(angle));
+    // scale it
+    this.X = this.f*this.x;
+    this.Y = this.f*this.y;
+  }
+
+}
+</code></pre></div></div>
+<hr />
+
+<p>Henon Map is a Strange Attractor.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Attractor">Wiki on Strange Attractor</a></p>
+
+<blockquote>
+  <p>In the mathematical field of dynamical systems, an attractor is a set of numerical values toward which a system tends to evolve, for a wide variety of starting conditions of the system. System values that get close enough to the attractor values remain close even if slightly disturbed.</p>
+</blockquote>
+
+<p><a href="https://around.com/chaos-2/">James Gleick’s book on Chaos</a> offers a lovely and insightful introduction to Strange Attractors while Steven Strogatz’s book on <a href="http://www.stevenstrogatz.com/books/nonlinear-dynamics-and-chaos-with-applications-to-physics-biology-chemistry-and-engineering">Non Linear Dynamics and Chaos</a> is a great book for a deeper dive.</p>
+
+<p>The equations used in this series of sketches are</p>
+
+<p>$x_{n+1} = x_ncosα - (y_n-x_n^2)sinα$<br />
+$y_{n+1} = x_nsinα + (y_n-x_n^2)cosα$</p>
+
+<hr />
+
+<h4 id="references">REFERENCES</h4>
+
+<p><a href="http://www.complexification.net/gallery/machines/henonPhase/">Jared Tarbell</a></p>
+
+<p><a href="http://paulbourke.net/fractals/henonphase/">Paul Bourke</a></p>
+
+<p><a href="https://mathworld.wolfram.com/HenonMap.html">MathWorld</a></p>
+
+<p><a href="https://around.com/chaos-2/">James Gleick’s book on Chaos</a></p>
+
+<p><a href="http://www.stevenstrogatz.com/books/nonlinear-dynamics-and-chaos-with-applications-to-physics-biology-chemistry-and-engineering">Non Linear Dynamics and Chaos by Steven Strogatz</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=ycJEoqmQvwg&amp;list=PLbN57C5Zdl6j_qJA-pARJnKsmROzPnO9V">Steven Strogatz Lectures on Non Linear Dynamics</a></p>
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Noisy Lines</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Noisy Lines</h1>
+<p class="meta">03 Jan 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Vera Molnár: ‘I have no regrets. My life is squares, triangles, lines’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/005a.png" /><br />
+<img src="/images/005b.png" /><br />
+<img src="/images/005c.png" /><br />
+<img src="/images/005d.png" /><br />
+<img src="/images/005e.png" /><br />
+<img src="/images/005f.png" /><br />
+<img src="/images/005g.png" /><br />
+<img src="/images/005h.png" />
+<img src="/images/005i.png" /><br />
+<img src="/images/005j.png" /><br />
+<img src="/images/005k.png" /><br />
+<img src="/images/005l.png" />
+<img src="/images/005m.png" /><br />
+<img src="/images/005n.png" /><br />
+<img src="/images/005o.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// grid based design
+// every cell in grid is filled with horizontal noisy lines
+// noise is simplex based
+// for variations
+// color chosen randomly from a fixed palette
+// cell size s is varied
+// gap g between lines in each cell is varied
+// for changing level of noise scaling factor sc and k is varied
+
+let s;
+let colors = [];
+let simplexNoise;
+let seed;
+
+function setup(){
+  createCanvas(600,600);
+  background(0);
+  // palette
+  colors = [color(255, 255, 252),color(190, 183, 164,color(255, 127, 17)),
+            color(255, 63, 0),color(243, 198, 119)]
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  // set cell size
+  // change to 150, 200 for different sizes
+  s = 100;
+  // seed for noise which we will vary for very cell
+  seed = 0;
+}
+
+function draw(){
+  noLoop();
+  makegrid();
+}
+
+function makegrid(){
+  // set number of rows and columns
+  let rows = height/s;
+  let cols = width/s;
+
+  // make a grid of cells
+  for(let i = 0; i &lt; rows-1; i++){
+    for(let j = 0; j &lt; cols-1; j++){
+      let x = j*s+s/2;
+      let y = i*s+s/2;
+      push();
+      translate(x,y);
+      // in each cell draw horizontal noisy lines
+      // changing the gap between the lines, the noise input etc
+      // gives variations
+      render();
+      pop();
+    }
+  }
+}
+
+function render(){
+  // gap between lines in each cell
+  // change g to 2,3,4 etc
+  let g = 1;
+  // margin to be left for each cell on all sides
+  let m = 10;
+  // change seed for every cell to get different patterns
+  seed += 1000;
+  // change color to black and white for variations
+  let rl = random(colors);
+
+  strokeWeight(1);
+  rl.setAlpha(250);
+  stroke(rl);
+  noFill();
+
+  // drawing the lines
+  for(let i = m; i &lt;= s-m; i+=g){
+
+    beginShape();
+    for(let x = m; x &lt;= s-m; x+=g){
+      // try changing k to .01 to 0.001,0.1 etc
+      // change sc to 1,5,10,etc
+      let sc = 15;
+      let k = 0.05
+      let y = i+sc*simplexNoise.noise2D(seed+k*x,seed+k*i);
+      y = i + sc*simplexNoise.noise2D(2*seed+k*x,2*seed+k*i);
+      vertex(x,y);
+    }
+    endShape();
+  }
+}
+
+</code></pre></div></div>
+<hr />
+
+<p>This series uses Open Simplex Noise to draw lines.</p>
+
+<p>The idea is to first make a grid of cells.The function makegrid() handles this bit. And for each cell makegrid() calls render().
+render() then fills each cell with horizontal lines.
+The lines are drawn using 2D Open Simplex Noise as so</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// drawing the lines
+for(let i = m; i &lt;= s-m; i+=g){
+
+  beginShape();
+  for(let x = m; x &lt;= s-m; x+=g){
+    // try changing k to .01 to 0.001,0.1 etc
+    // change sc to 1,5,10,etc
+    let sc = 15;
+    let k = 0.05
+    let y = i+sc*simplexNoise.noise2D(seed+k*x,seed+k*i);
+    vertex(x,y);
+  }
+  endShape();
+}
+</code></pre></div></div>
+
+<p>We run 2 loops one to move down the vertical axis(i) and one to move along the horizontal axis(x)</p>
+
+<p>If we were to change vertex(x,y) to vertex(x,i) we would simply get evenly spaced straight horizontal lines. What we do with the simplex noise is to shift i by just a bit at each point.This particular implementation uses the 2D version which takes 2 inputs.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let y = i+sc*simplexNoise.noise2D(seed+k*x,seed+k*i);
+</code></pre></div></div>
+<p>i and x are the original points in this particular cell.
+Note that we shift the origin to each top left corner of cell and render() draws wrt this shifted origin.</p>
+
+<p>k decides smoothness of the line.Smaller the value smoother the line, higher the value, jerkier the line.</p>
+
+<p>sc is just a scaling factor.</p>
+
+<p>seed - simplex noise is pseudo random in nature, i.e for a given set of input values , it always returns the same value.
+In order to have different lines in different cells we change the seed value.If we do not change seed, every cell will have similar looking lines.</p>
+
+<p>Perlin noise will work just fine for this series.</p>
+
+<p>Etienne Jacob offers a gentle and more thorough look at the ways in which we can use noise <a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">here</a></p>
+
+<p>Code has comments on where randomness has been implemented to generate the variations.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

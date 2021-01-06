@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Mystery Curves II</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Mystery Curves II</h1>
+<p class="meta">17 Dec 2020</p>
+
+<div class="post">
+  <blockquote>
+  <p>Everything we care about lies somewhere in the middle, where pattern and randomness interlace.</p>
+</blockquote>
+
+<blockquote>
+  <p>James Gleick</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/003j.png" /><br />
+<img src="/images/003i.png" /><br />
+<img src="/images/003g.png" /><br />
+<img src="/images/003h.png" /><br />
+<img src="/images/003f.png" /><br />
+<img src="/images/003e.png" /><br />
+<img src="/images/003d.png" /><br />
+<img src="/images/003c.png" /><br />
+<img src="/images/003b.png" /><br />
+<img src="/images/003a.png" /></p>
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// mystery curves
+// concentric curves of increasing radius in a grid
+// takes the following parametric form
+// x = cos(p*a) + cos(m*a)/2 + sin(n*a)/3;
+// y = sin(p*a) + sin(m*a)/2 + cos(n*a)/3;
+// where different values of p,m,n give different curves
+// in this series we will randomize p,m,n  - no intentional symmetry
+// see that resulting curves are more like scribbles
+
+// colors to plot curve - prettying up things a bit
+let colors;
+
+function setup(){
+  createCanvas(600,600);
+  background(250);
+  colors = [color(243, 198, 119),color(123, 30, 122),
+            color(179, 63, 98),color(249, 86, 79)];
+}
+
+function draw(){
+  noLoop();
+  // make a grid to plot multiple curves in one canvas
+  makeGrid();
+}
+
+function makeGrid(){
+  // change s to different sizes for different cell sizes
+  // this series has used s = 60,100,150,200,300,600
+  let s = 600;
+  let rows = height/s;
+  let cols = width/s;
+  strokeWeight(2);
+  // iterate over each cell
+  for (let x = 0; x &lt; rows +1; x+=1){
+    for (let y = 0; y &lt; cols+1; y+=1){
+      push();
+      // changing origin to center of current cell
+      translate(s*x+s/2,s*y+s/2);
+      render(s);
+      pop();
+    }
+  }
+}
+function render(s){
+  // set maximum size of curve such that it fits in neatly within the cell
+  let c = s/4 ;
+  // randomize p,m,n
+  p = random(10);
+  m = random(20);
+  n = random(20);
+  // plot the curve
+  // plotting cocentric curves of increasing radius for a nice looking sketch
+  for(let r = 10; r &lt; c; r+=10){
+    // set up colors,alpha etc
+    let cl = random(colors);
+    cl.setAlpha(150);
+    fill(cl);
+    stroke(0,150);
+    // start plotting
+    beginShape();
+    for(let a = 0; a &lt; 2*PI; a+= PI/1000){
+      // parametric equation of the curve
+      let x = cos(p*a) + cos(m*a)/2 + sin(n*a)/3;
+      let y = sin(p*a) + sin(m*a)/2 + cos(n*a)/3;
+      vertex(r*x,r*y);
+    }
+    endShape(CLOSE);
+  }
+}
+
+</code></pre></div></div>
+<hr />
+
+<p>This is again a series based on the same f defined in <a href="https://amsykal.github.io/github%20pages/2020/12/14/post002.html">previous post</a></p>
+
+<script type="math/tex; mode=display">\large f(t)= e^{it} + \frac{1}{2}e^{imt} + \frac{i}{3}e^{-int}</script>
+
+<p>However here the choice of m and n has been randomized. So symmetry is no longer achieved. The result is a series of curves which look more like scribbles.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://mathlesstraveled.com/2015/06/04/random-cyclic-curves-5/">Math Less Travelled</a></p>
+
+<p><a href="https://www.quantamagazine.org/solution-creating-art-with-mathematics-20151030/">Quanta Magazine</a></p>
+
+<p><a href="https://www.cut-the-knot.org/arithmetic/algebra/FiveFoldGraph.shtml">Cut the Knot</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

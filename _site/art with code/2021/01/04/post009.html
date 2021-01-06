@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Noisy Lines In Circles</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Noisy Lines In Circles</h1>
+<p class="meta">04 Jan 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Sol LeWitt: ‘The idea becomes a machine that makes the art.’’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/009a.png" /><br />
+<img src="/images/009b.png" /><br />
+<img src="/images/009c.png" /><br />
+<img src="/images/009d.png" /><br />
+<img src="/images/009e.png" /><br />
+<img src="/images/009f.png" /><br />
+<img src="/images/009g.png" /><br />
+<img src="/images/009h.png" />
+<img src="/images/009i.png" /><br />
+<img src="/images/009j.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// grid based design
+// every cell in grid is filled circles
+// these circles in turn are made of horizontal noisy lines
+// noise is simplex based
+// for variations
+// color and noise level chosen randomly
+// cell size s is varied
+// spacing between lines is also changed
+
+let cl,simplexNoise;
+let s,seed;
+let k;
+let colors = [];
+
+
+function setup(){
+  createCanvas(600,600);
+  background(25, 3, 30);
+  // palette
+  colors =[color( 217, 229, 214),color(0, 167, 225),color(237, 222, 164),
+          color(247, 160, 114),color(255, 155, 66)];
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  seed = 1000;
+  // noise factor to be incremented for each cell
+  k = 0;
+}
+
+function draw(){
+  noLoop();
+  makeGrid();
+}
+
+function makeGrid(){
+  // cell size
+  s = 60;
+  let rows = height/s;
+  let cols = width/s;
+  for(let i = 1; i &lt; cols-1; i++){
+    for(let j = 1; j &lt; rows-1; j++){
+      let x = i*s;
+      let y = j*s;
+      push();
+      translate(x,y);
+      render();
+      // change this to experiment like .001,.01, etc
+      k += 0.005;
+      pop();
+    }
+  }
+}
+
+function render(){
+  noFill();
+  cl = random(colors);
+  cl.setAlpha(100);
+  stroke(cl);
+  // call to draw a circle of noisy lines
+  polygon(s/2,s/2,0.4*s, 0.5*PI,1.5*PI) ;
+}
+
+// simple function to draw polygon of any number of sides
+// in this sketch we use it to draw a circle
+function polygon(x, y, radius, start, end) {
+  push();
+  translate(x,y);
+  for (let a = start; a &lt; end; a+= PI/150) {
+
+    // gives a point on the circumference of the circle
+    // PI/150 decides spacing between lines, change this to inc/dec the spacing
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+
+    // change height to experiment
+    let height = 2;
+    beginShape();
+    for(let x = sx; x &lt; -sx; x++){
+      let sn = simplexNoise.noise2D(seed+k*x,seed+k*sy);
+      let y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+  }
+  pop();
+}
+
+
+</code></pre></div></div>
+<hr />
+
+<p>This series follows the same procedure as the <a href="https://amsykal.github.io/art%20with%20code/2021/01/03/post008.html">previous series</a>.</p>
+
+<p>One minor modification is that we change not only the seed but also the value of k while moving from one cell to next thereby making the lines noisier as we move from first cell to the last.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>
