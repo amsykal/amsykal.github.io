@@ -4,13 +4,645 @@
 	<title>Blog</title>
 	<link href="http://amsykal.github.io/blog/atom.xml" rel="self"/>
 	<link href="http://amsykal.github.io/blog"/>
-	<updated>2021-01-06T08:38:18+05:30</updated>
+	<updated>2021-01-14T20:57:00+05:30</updated>
 	<id>http://amsykal.github.io/blog</id>
 	<author>
 		<name>Lakshmi</name>
 		<email>a.lakshmi.s@gmail.com</email>
 	</author>
 
+	
+		<entry>
+			<title>Art with Code: Lines in a Recursive Grid</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/01/14/post014.html"/>
+			<updated>2021-01-14T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/01/14/post014</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Stephen Hawking: ‘To understand recursion, one must first understand recursion.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/014a.png&quot; /&gt;
+&lt;img src=&quot;/images/014b.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/014c.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/014d.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/014e.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/014f.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/014g.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/014h.png&quot; /&gt;
+&lt;img src=&quot;/images/014i.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/014j.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/014k.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/014l.png&quot; /&gt;
+&lt;img src=&quot;/images/014m.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/014n.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/014o.png&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// code snippet referenced: https://editor.p5js.org/runemadsen/sketches/rkbBsG_1z
+// we use recursive division to split a rectangle
+// eachr rectangle is then filled with noisy lines
+// the noisy lines are drawn vertically when height &amp;gt; width
+// horizontally when width &amp;gt; height
+// randomize color choice
+// variations include change in rectangle size and choice of noise level
+
+// margin
+let margin = 0
+
+// smallest permitted width or height
+//change this for variations
+let s = 20;
+// to store palette
+let colors = [];
+// simplex noise
+let simplexNoise;
+
+
+
+function setup() {
+  createCanvas(600, 600);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+}
+
+function draw(){
+  noLoop();
+  drawRect(margin,margin, width - 2*margin, height - 2*margin);
+}
+
+// recursive division of rectangle
+function drawRect(x, y, w, h)
+{
+
+  render(x,y,w,h);
+  // then figure out if we need to draw another
+  let splitWidth = random(1) &amp;gt; 0.5;
+  let splitWhere = random(0.3, 0.8);
+
+  // if we're splitting the width
+  if(splitWidth &amp;amp;&amp;amp; w &amp;gt; s)
+  {
+    drawRect(x, y, w * splitWhere, h);
+    drawRect(x + (w * splitWhere), y, w * (1 - splitWhere), h);
+
+  }
+  // else if we're splitting the height
+  else if(h &amp;gt; s)
+  {
+    drawRect(x, y, w, h * splitWhere);
+    drawRect(x, y + (h * splitWhere), w, h * (1 - splitWhere));
+  }
+}
+
+// final sketch to fill each rectangle with noisy lines
+function render(x,y,w,h){
+
+  push();
+  translate(x,y);
+
+  // clear previous drawings
+  let cl = random(colors);
+  fill( 23, 28, 51);
+  stroke(0);
+  strokeWeight(8);
+  w = 2*w;
+  h = 2*h;
+  rect(0,0,w,h);
+
+  strokeWeight(2);
+  let sl = random(colors);
+  sl.setAlpha(255);
+  stroke(sl);
+
+  // some sketches have both horizontal and vertical lines
+
+  // if width greater, fill horizontally
+  if(w &amp;gt;= h){
+    let sh = h/10;
+    for(let y = 0; y &amp;lt; h; y+= sh){
+      // draw new stuff
+
+      beginShape();
+      for(let x = 0; x &amp;lt; w; x++){
+        // change .1 to other values for variations
+        let z = sh*simplexNoise.noise2D(.1*x,.1*y);
+        //fill(random(colors));
+        vertex(x, y+z);
+      }
+      endShape();
+    }
+  }
+  // if height greater, fill vertically
+  else{
+    let sw = w/10;
+    for(let x = 0; x &amp;lt; w; x+=sw){
+      beginShape();
+      for(let y = 0; y &amp;lt; h; y++){
+        // change .1 to other values for variations
+        let z = sw*simplexNoise.noise2D(.1*y,.1*x);
+        vertex(x+z, y);
+      }
+      endShape();
+    }
+  }
+  pop();
+
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series is a combination of &lt;a href=&quot;https://amsykal.github.io/art with code/2021/01/10/post012.html&quot;&gt;the series using recursive division&lt;/a&gt; and &lt;a href=&quot;https://amsykal.github.io/art with code/2021/01/03/post008.html&quot;&gt;the series implementing noisy lines in a grid&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In each rectangle obtained by recursive division, we draw simplex noise based lines.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Hexagons</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/01/11/post013.html"/>
+			<updated>2021-01-11T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/01/11/post013</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Johannes Kepler: ‘There must be some definite cause why, whenever snow begins to fall, its initial formations invariably display the shape of a six-cornered starlet. For if it happens by chance, why do they not fall just as well with five corners or with seven? Why always with six?.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/013b.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/013c.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/013d.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/013e.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/013f.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/013g.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/013h.png&quot; /&gt;
+&lt;img src=&quot;/images/013i.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/013j.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/013k.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// basic rectangle division
+// repeated division of rectangle into smaller rectangles
+// concentric hexagons in each rectangle
+
+// smallest permitted width or height
+// change s for variations
+let s = 100;
+// to store palette
+let colors = [];
+let margin = 0
+
+function setup() {
+  createCanvas(600, 600);
+  colors = [color(31, 32, 65),color(75, 63, 114),
+            color(255, 200, 87),color(17, 157, 164),color( 25, 100, 126)]
+}
+
+function draw(){
+  background(255);
+  noLoop();
+  push();
+  // call recursive div algorithm
+  drawRect(margin,margin, width - 2*margin, height - 2*margin);
+  pop();
+
+}
+
+// recursive division of rectangle
+function drawRect(x, y, w, h)
+{
+  // draw the hexagons within the rectangle
+  render(x,y,w,h);
+  // then figure out if we need to draw another
+  let splitWidth = random(1) &amp;gt; 0.5;
+  let splitWhere = random(0.3, 0.8);
+
+  // if we're splitting the width
+  if(splitWidth &amp;amp;&amp;amp; w &amp;gt; s)
+  {
+    drawRect(x, y, w * splitWhere, h);
+    drawRect(x + (w * splitWhere), y, w * (1 - splitWhere), h);
+
+  }
+  // else if we're splitting the height
+  else if(h &amp;gt; s)
+  {
+    drawRect(x, y, w, h * splitWhere);
+    drawRect(x, y + (h * splitWhere), w, h * (1 - splitWhere));
+  }
+}
+
+
+
+// final sketch to draw rectangles
+function render(x,y,w,h){
+
+  push();
+  // move center to x,y
+  translate(x,y);
+  strokeWeight(4);
+  let fl = random(colors);
+  fl.setAlpha(100);
+  fill(fl);
+  // variation stroke black, white
+  stroke(5);
+  rect(0,0, w, h);
+  strokeWeight(2);
+  let cl = random(colors);
+  cl.setAlpha(120);
+  // variation stroke black, white, colors
+  stroke(5);
+  //stroke(random(colors));
+  // remove fill for black and white variation
+  fill(cl);
+
+  // set n to 6 to draw hexagons
+  let n = 6;
+
+  // variation
+  // this decides orientation of the hexagon
+  //fixed angle 0 , PI/6
+  //let a = 0 ;
+  let a = PI/6;
+  //let a = random(2*PI);
+
+  // variation - concentric hexagons
+  cPolygon(w/2,h/2,min(w/2,h/2),n,a);
+  pop();
+
+}
+
+// simple function to draw polygon of any number of sides
+// in this case hexagons
+// x, y - center
+// radius - distance between center and vertex of hexagon
+// angle - orientation of hexagon
+function polygon(x, y, radius, sides = 3, angle = 0) {
+
+  push();
+  translate(x,y);
+  beginShape();
+  for (let i = 0; i &amp;lt; sides; i+=1) {
+    let a = angle + TWO_PI * (i / sides);
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    vertex(sx, sy);
+  }
+  endShape(CLOSE);
+  pop();
+
+}
+
+// simple function to draw concentric polygons of any number of sides
+function cPolygon(x, y, radius, sides = 3, angle = 0,offset = 0) {
+  for(let i = radius; i &amp;gt; 4; i-=10){
+    polygon(x,y,i,sides,angle);
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series builds on top of the &lt;a href=&quot;https://amsykal.github.io/project%20euler/2021/01/10/post012.html&quot;&gt;previous series using recursive division&lt;/a&gt;.
+In each rectangle, we render concentric regular hexagons.&lt;/p&gt;
+
+&lt;p&gt;Even a casual observer of nature is unlikely to miss the recurring presence of hexagons in everything from beehives to Devils Postpile.&lt;/p&gt;
+
+&lt;p&gt;Kepler’s essay on The Six Cornered Snowflake , A New Year’s Gift is not only a good start for us to start wondering about “why hexagons” but also a beautiful exposition on the workings of his mind, the brilliance,genius and playfulness of his thought process.What is fascinating is that such a seemingly simple question remained unanswered for nearly 300 years after Kepler first made an attempt.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://larouchepac.com/snowflake&quot;&gt;Six Cornered Snowflake - By Johannes Kepler&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.bbc.co.uk/programmes/w3csy5b7&quot;&gt;Kepler’s Snowflake, BBC Science Stories&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.scientificamerican.com/article/why-are-snowflakes-symmet/&quot;&gt;Why Are Snowflakes Symmetrical&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Rectangles</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/01/10/post012.html"/>
+			<updated>2021-01-10T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/01/10/post012</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Piet Mondrian: ‘Art is higher than reality and has no direct relation to reality. To approach the spiritual in art, one will make as little use as possible of reality, because reality is opposed to the spiritual. We find ourselves in the presence of an abstract art. Art should be above reality, otherwise it would have no value for man.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/012a.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/012b.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/012c.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/012d.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/012e.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/012f.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/012g.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/012h.png&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// basic rectangle division
+// repeated division of rectangle into smaller rectangles
+// this sketch has code for simple division
+
+// smallest permitted width or height
+// change s for variations
+let s = 15;
+// margin (border)
+let margin = 10;
+// to store palette
+let colors = [];
+
+
+function setup() {
+  createCanvas(600, 600);
+  background(255)
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197),
+            color(0,0,0)];
+}
+
+function draw(){
+  noLoop();
+  // call recursive div algorithm
+  drawRect(margin,margin,width-2*margin,height-2*margin);
+}
+
+// recursive division of rectangle
+function drawRect(x,y,w,h)
+{
+  // draw a rectangle of width w and height h at (x,y)
+  render(x,y,w,h);
+
+  // then figure out if we need to draw another
+  let splitWidth = random(1) &amp;gt; 0.5;
+  let splitWhere = random(0.3, 0.8);
+
+  // if we're splitting the width
+  if(splitWidth &amp;amp;&amp;amp; w &amp;gt; s)
+  {
+    drawRect(x, y, w * splitWhere, h);
+    drawRect(x + (w * splitWhere), y, w * (1 - splitWhere), h);
+  }
+  // else if we're splitting the height
+  else if(h &amp;gt; s)
+  {
+    drawRect(x, y, w, h * splitWhere);
+    drawRect(x, y + (h * splitWhere), w, h * (1 - splitWhere));
+  }
+}
+
+// final sketch to draw rectangles
+function render(x,y,w,h){
+  push();
+  // move center to x,y i.e make current rectangle the reference
+  translate(x,y);
+  // colors etc
+  let fl = random(colors);
+  fill(fl);
+  stroke(0);
+  // change depending on size of rectangle, greater thickness for larger rects
+  strokeWeight(1);
+  rect(0,0, w, h);
+  pop();
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This is a simple series of sketches.&lt;/p&gt;
+
+&lt;p&gt;We draw rectangles recursively,deciding at every iteration of the recursion whether to divide vertically or horizontally.&lt;/p&gt;
+
+&lt;p&gt;Variations are the result of randomisation of division,changes in size of smallest possible rectangle and choice of colours.&lt;/p&gt;
+
+&lt;p&gt;Th choice of color palette in this  series is influenced in part by Piet Mondrian’s Composition II with Red, Blue and Yellow.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://blog.singulart.com/en/2020/02/20/composition-ii-with-red-blue-and-yellow-1930-piet-mondrian-and-neo-plasticism/&quot;&gt;Piet Mondrian and De Stijl Movement&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Criss Cross </title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/01/08/post011.html"/>
+			<updated>2021-01-08T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/01/08/post011</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Sol LeWitt: ‘You shouldn’t be a prisoner of your own ideas.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/011a.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011b.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011c.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011d.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011e.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011f.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011g.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011h.png&quot; /&gt;
+&lt;img src=&quot;/images/011i.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011j.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011k.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011l.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011m.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011n.png&quot; /&gt;
+&lt;img src=&quot;/images/011o.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/011p.png&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// grid of cells
+// in each cell noise lines are drawn
+// lines are drawn symmetrically in 2 directions
+// circle used as reference for endpoints of lines
+// for double/triple line effect noise level is varied and
+// lines are redrawn
+// randomness increased from cell to cell
+
+let cl,simplexNoise;
+let s,seed;
+let k;
+
+// simple function to draw lines in a polygon
+function polygon(x, y, radius, start, end) {
+  // variations by changing a+= from PI/2 to PI/20
+  beginShape();
+  for (let a = start; a &amp;lt; end; a+= PI/8) {
+
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+
+    // drawing the lines
+    // changing height increases randomness
+    let height = 5;
+    beginShape();
+    for(let x = sx; x &amp;lt; -sx; x++){
+      let sn = simplexNoise.noise2D(seed+k*x,seed+k*sy);
+      let y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+    // comment everything below if you want only one line
+
+    // for double lines
+    height = 10;
+    beginShape();
+    for(let x = sx; x &amp;lt; -sx; x++){
+      let sn = simplexNoise.noise2D(seed+k*x,seed+k*sy);
+      let y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+
+    // 3 lines
+    height = 20;
+    beginShape();
+    for(let x = sx; x &amp;lt; -sx; x++){
+      let sn = simplexNoise.noise2D(seed+k*x,seed+k*sy);
+      let y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+  }
+
+  // increase noise for each cell by this amount
+  // this increment can be changed for variations
+  k += 0.005;
+  endShape();
+
+}
+
+function setup(){
+  createCanvas(600,600);
+  background(230, 230, 230);
+  // set up colors
+  cl = color(12, 32, 32,250);
+  strokeWeight(2);
+  stroke(cl);
+  noFill();
+
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  // change seed for each render
+  seed = 1000;
+  k = 0;
+}
+
+function draw(){
+  noLoop();
+  makeGrid();
+}
+
+function makeGrid(){
+  // cell size - change for variations
+  s = 100;
+  // get number of rows and cols
+  let rows = height/s;
+  let cols = width/s;
+  for(let i = 1; i &amp;lt; cols-1; i++){
+    for(let j = 1; j &amp;lt; rows-1; j++){
+      let x = i*s;
+      let y = j*s;
+
+      // set 1
+      // change PI/2 to PI/4, PI/6 etc for variations
+      // move origin to centre of cell
+      push();
+      translate(x+s/2,y+s/2);
+      rotate(PI/3);
+      polygon(0,0, 0.45*s, 0.5*PI,1.5*PI) ;
+      pop();
+
+      // set 2
+      // repeat symmetrically
+      push();
+      translate(x+s/2,y+s/2);
+      rotate(-PI/3);
+      polygon(0,0, 0.45*s, 0.5*PI,1.5*PI) ;
+      pop();
+    }
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;This set features criss crossed lines.&lt;/p&gt;
+
+&lt;p&gt;The lines are drawn using 2D open simplex noise.&lt;/p&gt;
+
+&lt;p&gt;The canvas is divided into a grid with cells.makeGrid() handles this.&lt;/p&gt;
+
+&lt;p&gt;For each cell we call the polygon function twice.
+Polygon function draws lines symmetrically in 2 directions
+A circle is used as a reference for endpoints of the lines.&lt;/p&gt;
+
+&lt;p&gt;For details about how variations are obtained, refer to the comments in the code.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>An Expected-Value Problem</title>
@@ -88,7 +720,7 @@ Let’s say we pick A2 , once done with the cutting we will have&lt;/p&gt;
     # ans increase by 1
     if sum(x) == 1:
         ans += 1
-    # we done with the last batch
+    # we are done with the last batch
     if b == 0:
         return ans
     # pick a sheet
@@ -483,7 +1115,7 @@ In order to have different lines in different cells we change the seed value.If 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# ns = number of rows in the triangle
 # trsum stores the running sum for each row
 # for eg
-# tr[2][3] gives the running sum of elements in row 2 from column 0 to 3
+# trsum[2][3] gives the running sum of elements in row 2 from column 0 to 3
 
 # initalize minimum
 ans = 10**10

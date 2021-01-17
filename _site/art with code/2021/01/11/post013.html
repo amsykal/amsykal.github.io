@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Hexagons</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Hexagons</h1>
+<p class="meta">11 Jan 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Johannes Kepler: ‘There must be some definite cause why, whenever snow begins to fall, its initial formations invariably display the shape of a six-cornered starlet. For if it happens by chance, why do they not fall just as well with five corners or with seven? Why always with six?.’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/013b.png" /><br />
+<img src="/images/013c.png" /><br />
+<img src="/images/013d.png" /><br />
+<img src="/images/013e.png" /><br />
+<img src="/images/013f.png" /><br />
+<img src="/images/013g.png" /><br />
+<img src="/images/013h.png" />
+<img src="/images/013i.png" /><br />
+<img src="/images/013j.png" /><br />
+<img src="/images/013k.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// basic rectangle division
+// repeated division of rectangle into smaller rectangles
+// concentric hexagons in each rectangle
+
+// smallest permitted width or height
+// change s for variations
+let s = 100;
+// to store palette
+let colors = [];
+let margin = 0
+
+function setup() {
+  createCanvas(600, 600);
+  colors = [color(31, 32, 65),color(75, 63, 114),
+            color(255, 200, 87),color(17, 157, 164),color( 25, 100, 126)]
+}
+
+function draw(){
+  background(255);
+  noLoop();
+  push();
+  // call recursive div algorithm
+  drawRect(margin,margin, width - 2*margin, height - 2*margin);
+  pop();
+
+}
+
+// recursive division of rectangle
+function drawRect(x, y, w, h)
+{
+  // draw the hexagons within the rectangle
+  render(x,y,w,h);
+  // then figure out if we need to draw another
+  let splitWidth = random(1) &gt; 0.5;
+  let splitWhere = random(0.3, 0.8);
+
+  // if we're splitting the width
+  if(splitWidth &amp;&amp; w &gt; s)
+  {
+    drawRect(x, y, w * splitWhere, h);
+    drawRect(x + (w * splitWhere), y, w * (1 - splitWhere), h);
+
+  }
+  // else if we're splitting the height
+  else if(h &gt; s)
+  {
+    drawRect(x, y, w, h * splitWhere);
+    drawRect(x, y + (h * splitWhere), w, h * (1 - splitWhere));
+  }
+}
+
+
+
+// final sketch to draw rectangles
+function render(x,y,w,h){
+
+  push();
+  // move center to x,y
+  translate(x,y);
+  strokeWeight(4);
+  let fl = random(colors);
+  fl.setAlpha(100);
+  fill(fl);
+  // variation stroke black, white
+  stroke(5);
+  rect(0,0, w, h);
+  strokeWeight(2);
+  let cl = random(colors);
+  cl.setAlpha(120);
+  // variation stroke black, white, colors
+  stroke(5);
+  //stroke(random(colors));
+  // remove fill for black and white variation
+  fill(cl);
+
+  // set n to 6 to draw hexagons
+  let n = 6;
+
+  // variation
+  // this decides orientation of the hexagon
+  //fixed angle 0 , PI/6
+  //let a = 0 ;
+  let a = PI/6;
+  //let a = random(2*PI);
+
+  // variation - concentric hexagons
+  cPolygon(w/2,h/2,min(w/2,h/2),n,a);
+  pop();
+
+}
+
+// simple function to draw polygon of any number of sides
+// in this case hexagons
+// x, y - center
+// radius - distance between center and vertex of hexagon
+// angle - orientation of hexagon
+function polygon(x, y, radius, sides = 3, angle = 0) {
+
+  push();
+  translate(x,y);
+  beginShape();
+  for (let i = 0; i &lt; sides; i+=1) {
+    let a = angle + TWO_PI * (i / sides);
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    vertex(sx, sy);
+  }
+  endShape(CLOSE);
+  pop();
+
+}
+
+// simple function to draw concentric polygons of any number of sides
+function cPolygon(x, y, radius, sides = 3, angle = 0,offset = 0) {
+  for(let i = radius; i &gt; 4; i-=10){
+    polygon(x,y,i,sides,angle);
+  }
+}
+
+</code></pre></div></div>
+
+<hr />
+
+<p>This series builds on top of the <a href="https://amsykal.github.io/project%20euler/2021/01/10/post012.html">previous series using recursive division</a>.
+In each rectangle, we render concentric regular hexagons.</p>
+
+<p>Even a casual observer of nature is unlikely to miss the recurring presence of hexagons in everything from beehives to Devils Postpile.</p>
+
+<p>Kepler’s essay on The Six Cornered Snowflake , A New Year’s Gift is not only a good start for us to start wondering about “why hexagons” but also a beautiful exposition on the workings of his mind, the brilliance,genius and playfulness of his thought process.What is fascinating is that such a seemingly simple question remained unanswered for nearly 300 years after Kepler first made an attempt.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://larouchepac.com/snowflake">Six Cornered Snowflake - By Johannes Kepler</a></p>
+
+<p><a href="https://www.bbc.co.uk/programmes/w3csy5b7">Kepler’s Snowflake, BBC Science Stories</a></p>
+
+<p><a href="https://www.scientificamerican.com/article/why-are-snowflakes-symmet/">Why Are Snowflakes Symmetrical</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

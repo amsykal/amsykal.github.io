@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Criss Cross </title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Criss Cross </h1>
+<p class="meta">08 Jan 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Sol LeWitt: ‘You shouldn’t be a prisoner of your own ideas.’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/011a.png" /><br />
+<img src="/images/011b.png" /><br />
+<img src="/images/011c.png" /><br />
+<img src="/images/011d.png" /><br />
+<img src="/images/011e.png" /><br />
+<img src="/images/011f.png" /><br />
+<img src="/images/011g.png" /><br />
+<img src="/images/011h.png" />
+<img src="/images/011i.png" /><br />
+<img src="/images/011j.png" /><br />
+<img src="/images/011k.png" /><br />
+<img src="/images/011l.png" /><br />
+<img src="/images/011m.png" /><br />
+<img src="/images/011n.png" />
+<img src="/images/011o.png" /><br />
+<img src="/images/011p.png" /></p>
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// grid of cells
+// in each cell noise lines are drawn
+// lines are drawn symmetrically in 2 directions
+// circle used as reference for endpoints of lines
+// for double/triple line effect noise level is varied and
+// lines are redrawn
+// randomness increased from cell to cell
+
+let cl,simplexNoise;
+let s,seed;
+let k;
+
+// simple function to draw lines in a polygon
+function polygon(x, y, radius, start, end) {
+  // variations by changing a+= from PI/2 to PI/20
+  beginShape();
+  for (let a = start; a &lt; end; a+= PI/8) {
+
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+
+    // drawing the lines
+    // changing height increases randomness
+    let height = 5;
+    beginShape();
+    for(let x = sx; x &lt; -sx; x++){
+      let sn = simplexNoise.noise2D(seed+k*x,seed+k*sy);
+      let y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+    // comment everything below if you want only one line
+
+    // for double lines
+    height = 10;
+    beginShape();
+    for(let x = sx; x &lt; -sx; x++){
+      let sn = simplexNoise.noise2D(seed+k*x,seed+k*sy);
+      let y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+
+    // 3 lines
+    height = 20;
+    beginShape();
+    for(let x = sx; x &lt; -sx; x++){
+      let sn = simplexNoise.noise2D(seed+k*x,seed+k*sy);
+      let y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+  }
+
+  // increase noise for each cell by this amount
+  // this increment can be changed for variations
+  k += 0.005;
+  endShape();
+
+}
+
+function setup(){
+  createCanvas(600,600);
+  background(230, 230, 230);
+  // set up colors
+  cl = color(12, 32, 32,250);
+  strokeWeight(2);
+  stroke(cl);
+  noFill();
+
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  // change seed for each render
+  seed = 1000;
+  k = 0;
+}
+
+function draw(){
+  noLoop();
+  makeGrid();
+}
+
+function makeGrid(){
+  // cell size - change for variations
+  s = 100;
+  // get number of rows and cols
+  let rows = height/s;
+  let cols = width/s;
+  for(let i = 1; i &lt; cols-1; i++){
+    for(let j = 1; j &lt; rows-1; j++){
+      let x = i*s;
+      let y = j*s;
+
+      // set 1
+      // change PI/2 to PI/4, PI/6 etc for variations
+      // move origin to centre of cell
+      push();
+      translate(x+s/2,y+s/2);
+      rotate(PI/3);
+      polygon(0,0, 0.45*s, 0.5*PI,1.5*PI) ;
+      pop();
+
+      // set 2
+      // repeat symmetrically
+      push();
+      translate(x+s/2,y+s/2);
+      rotate(-PI/3);
+      polygon(0,0, 0.45*s, 0.5*PI,1.5*PI) ;
+      pop();
+    }
+  }
+}
+
+</code></pre></div></div>
+<hr />
+
+<p>This set features criss crossed lines.</p>
+
+<p>The lines are drawn using 2D open simplex noise.</p>
+
+<p>The canvas is divided into a grid with cells.makeGrid() handles this.</p>
+
+<p>For each cell we call the polygon function twice.
+Polygon function draws lines symmetrically in 2 directions
+A circle is used as a reference for endpoints of the lines.</p>
+
+<p>For details about how variations are obtained, refer to the comments in the code.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

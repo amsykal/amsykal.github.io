@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Rectangles</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Rectangles</h1>
+<p class="meta">10 Jan 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Piet Mondrian: ‘Art is higher than reality and has no direct relation to reality. To approach the spiritual in art, one will make as little use as possible of reality, because reality is opposed to the spiritual. We find ourselves in the presence of an abstract art. Art should be above reality, otherwise it would have no value for man.’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/012a.png" /><br />
+<img src="/images/012b.png" /><br />
+<img src="/images/012c.png" /><br />
+<img src="/images/012d.png" /><br />
+<img src="/images/012e.png" /><br />
+<img src="/images/012f.png" /><br />
+<img src="/images/012g.png" /><br />
+<img src="/images/012h.png" /></p>
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// basic rectangle division
+// repeated division of rectangle into smaller rectangles
+// this sketch has code for simple division
+
+// smallest permitted width or height
+// change s for variations
+let s = 15;
+// margin (border)
+let margin = 10;
+// to store palette
+let colors = [];
+
+
+function setup() {
+  createCanvas(600, 600);
+  background(255)
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197),
+            color(0,0,0)];
+}
+
+function draw(){
+  noLoop();
+  // call recursive div algorithm
+  drawRect(margin,margin,width-2*margin,height-2*margin);
+}
+
+// recursive division of rectangle
+function drawRect(x,y,w,h)
+{
+  // draw a rectangle of width w and height h at (x,y)
+  render(x,y,w,h);
+
+  // then figure out if we need to draw another
+  let splitWidth = random(1) &gt; 0.5;
+  let splitWhere = random(0.3, 0.8);
+
+  // if we're splitting the width
+  if(splitWidth &amp;&amp; w &gt; s)
+  {
+    drawRect(x, y, w * splitWhere, h);
+    drawRect(x + (w * splitWhere), y, w * (1 - splitWhere), h);
+  }
+  // else if we're splitting the height
+  else if(h &gt; s)
+  {
+    drawRect(x, y, w, h * splitWhere);
+    drawRect(x, y + (h * splitWhere), w, h * (1 - splitWhere));
+  }
+}
+
+// final sketch to draw rectangles
+function render(x,y,w,h){
+  push();
+  // move center to x,y i.e make current rectangle the reference
+  translate(x,y);
+  // colors etc
+  let fl = random(colors);
+  fill(fl);
+  stroke(0);
+  // change depending on size of rectangle, greater thickness for larger rects
+  strokeWeight(1);
+  rect(0,0, w, h);
+  pop();
+}
+</code></pre></div></div>
+
+<hr />
+
+<p>This is a simple series of sketches.</p>
+
+<p>We draw rectangles recursively,deciding at every iteration of the recursion whether to divide vertically or horizontally.</p>
+
+<p>Variations are the result of randomisation of division,changes in size of smallest possible rectangle and choice of colours.</p>
+
+<p>Th choice of color palette in this  series is influenced in part by Piet Mondrian’s Composition II with Red, Blue and Yellow.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://blog.singulart.com/en/2020/02/20/composition-ii-with-red-blue-and-yellow-1930-piet-mondrian-and-neo-plasticism/">Piet Mondrian and De Stijl Movement</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

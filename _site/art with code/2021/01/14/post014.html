@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Lines in a Recursive Grid</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Lines in a Recursive Grid</h1>
+<p class="meta">14 Jan 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Stephen Hawking: ‘To understand recursion, one must first understand recursion.’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/014a.png" />
+<img src="/images/014b.png" /><br />
+<img src="/images/014c.png" /><br />
+<img src="/images/014d.png" /><br />
+<img src="/images/014e.png" /><br />
+<img src="/images/014f.png" /><br />
+<img src="/images/014g.png" /><br />
+<img src="/images/014h.png" />
+<img src="/images/014i.png" /><br />
+<img src="/images/014j.png" /><br />
+<img src="/images/014k.png" /><br />
+<img src="/images/014l.png" />
+<img src="/images/014m.png" /><br />
+<img src="/images/014n.png" /><br />
+<img src="/images/014o.png" /></p>
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// code snippet referenced: https://editor.p5js.org/runemadsen/sketches/rkbBsG_1z
+// we use recursive division to split a rectangle
+// eachr rectangle is then filled with noisy lines
+// the noisy lines are drawn vertically when height &gt; width
+// horizontally when width &gt; height
+// randomize color choice
+// variations include change in rectangle size and choice of noise level
+
+// margin
+let margin = 0
+
+// smallest permitted width or height
+//change this for variations
+let s = 20;
+// to store palette
+let colors = [];
+// simplex noise
+let simplexNoise;
+
+
+
+function setup() {
+  createCanvas(600, 600);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+}
+
+function draw(){
+  noLoop();
+  drawRect(margin,margin, width - 2*margin, height - 2*margin);
+}
+
+// recursive division of rectangle
+function drawRect(x, y, w, h)
+{
+
+  render(x,y,w,h);
+  // then figure out if we need to draw another
+  let splitWidth = random(1) &gt; 0.5;
+  let splitWhere = random(0.3, 0.8);
+
+  // if we're splitting the width
+  if(splitWidth &amp;&amp; w &gt; s)
+  {
+    drawRect(x, y, w * splitWhere, h);
+    drawRect(x + (w * splitWhere), y, w * (1 - splitWhere), h);
+
+  }
+  // else if we're splitting the height
+  else if(h &gt; s)
+  {
+    drawRect(x, y, w, h * splitWhere);
+    drawRect(x, y + (h * splitWhere), w, h * (1 - splitWhere));
+  }
+}
+
+// final sketch to fill each rectangle with noisy lines
+function render(x,y,w,h){
+
+  push();
+  translate(x,y);
+
+  // clear previous drawings
+  let cl = random(colors);
+  fill( 23, 28, 51);
+  stroke(0);
+  strokeWeight(8);
+  w = 2*w;
+  h = 2*h;
+  rect(0,0,w,h);
+
+  strokeWeight(2);
+  let sl = random(colors);
+  sl.setAlpha(255);
+  stroke(sl);
+
+  // some sketches have both horizontal and vertical lines
+
+  // if width greater, fill horizontally
+  if(w &gt;= h){
+    let sh = h/10;
+    for(let y = 0; y &lt; h; y+= sh){
+      // draw new stuff
+
+      beginShape();
+      for(let x = 0; x &lt; w; x++){
+        // change .1 to other values for variations
+        let z = sh*simplexNoise.noise2D(.1*x,.1*y);
+        //fill(random(colors));
+        vertex(x, y+z);
+      }
+      endShape();
+    }
+  }
+  // if height greater, fill vertically
+  else{
+    let sw = w/10;
+    for(let x = 0; x &lt; w; x+=sw){
+      beginShape();
+      for(let y = 0; y &lt; h; y++){
+        // change .1 to other values for variations
+        let z = sw*simplexNoise.noise2D(.1*y,.1*x);
+        vertex(x+z, y);
+      }
+      endShape();
+    }
+  }
+  pop();
+
+}
+
+</code></pre></div></div>
+
+<hr />
+
+<p>This series is a combination of <a href="https://amsykal.github.io/art with code/2021/01/10/post012.html">the series using recursive division</a> and <a href="https://amsykal.github.io/art with code/2021/01/03/post008.html">the series implementing noisy lines in a grid</a></p>
+
+<p>In each rectangle obtained by recursive division, we draw simplex noise based lines.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>
