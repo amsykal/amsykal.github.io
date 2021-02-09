@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Noisy Circles And A Grid</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Noisy Circles And A Grid</h1>
+<p class="meta">09 Feb 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Edwin Markham:</p>
+</blockquote>
+
+<blockquote>
+  <p>‘He drew a circle that shut me out —<br />
+Heretic, rebel, a thing to flout.<br />
+But Love and I had the wit to win:<br />
+We drew a circle that took him in!’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/021a.png" /></p>
+
+<p><img src="/images/021b.png" /></p>
+
+<p><img src="/images/021c.png" /></p>
+
+<p><img src="/images/021d.png" /></p>
+
+<p><img src="/images/021e.png" /></p>
+
+<p><img src="/images/021f.png" /></p>
+
+<p><img src="/images/021g.png" /></p>
+
+<p><img src="/images/021h.png" /></p>
+
+<p><img src="/images/021i.png" /></p>
+
+<p><img src="/images/021j.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let simplexNoise;
+let s;
+let colors = [];
+
+function setup(){
+  createCanvas(600,600);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  colors = [color(127, 183, 190),color(211, 243, 238),
+            color(218, 204, 62),color(188, 44, 26),
+            color(125, 21, 56)];
+}
+
+function draw(){
+  noLoop();
+  background(255);
+  // size of each cell - change for variations
+  s = 60;
+  makegrid1();
+  render();
+  makegrid();
+}
+
+// initial grid of cells that colors them with a random color
+function makegrid1(){
+  let rows = height/s;
+  let cols = width/s;
+  noFill();
+  for(let i = -1; i &lt;= rows; i++){
+    for(let j = -1; j &lt;= cols; j++){
+        let x = j*s;
+        let y = i*s;
+        push();
+        translate(x,y);
+        strokeWeight(6);
+        stroke(255);
+        let cl = random(colors);
+        cl.setAlpha(255);
+        fill(cl);
+        rect(0,0,s,s);
+        pop();
+    }
+  }
+}
+
+// draw the black noisy circles
+function render(){
+  //cpolygon(-50,-50,2*width, 0, 2*PI, PI/250);
+  //cpolygon(width+100,height+100,2*width, 0, 2*PI, PI/250);
+  //cpolygon(width+50,-50,2*width, 0, 2*PI, PI/250);
+  //cpolygon(-50,height+50,2*width, 0, 2*PI, PI/250);
+  cpolygon(0.5*width,0.5*height,2*width, 0, 2*PI, PI/250);
+  cpolygon(0.5*width,0.5*height,0.1*width, 0, 2*PI, PI/6);
+  //cpolygon(width+50,height+50,2*width, 0, 2*PI, PI/500);
+  //seed += 1000;
+}
+
+function cpolygon(x, y, radius, start, end, inc){
+  // change 10 (spacing between concentric circles to other values )
+  for(let r = 0; r &lt; radius; r+= 10){
+    start = random(2*PI);
+    mpolygon(x, y, r, start, start+2*PI, inc);
+  }
+}
+
+// draw rectangle(polygon) multiple times to get handdrawn effect
+function mpolygon(x, y, radius, start, end, inc){
+  for(let r = 0; r &lt; 4; r+= 0.5){
+    //seed += 1000;
+    polygon(x+r, y+r, radius, start, end, inc);
+  }
+}
+
+function polygon(x, y, radius, start, end, inc) {
+
+  push();
+  translate(x,y);
+  beginShape();
+  for (let a = start; a &lt;= end; a+= inc) {
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    // change scaling from 1 to 20 for variations
+    let r = 10;
+    let t = millis()/1000;
+    // change noise .05 to .1,.2,.01 etc
+    let rn = simplexNoise.noise4D(.05*x,0.05*sy,r*cos(2*PI*t),r*sin(2*PI*t));
+    let sx2 = sx + r*rn*cos(a);
+    let sy2 = sy + r*rn*sin(a);
+    stroke(0,255);
+    strokeWeight(1);
+    noFill();
+    // change for variaiotns by uncommenting original vertex
+    //vertex(sx,sy);
+    vertex(sx2,sy2);
+  }
+  endShape(CLOSE);
+  pop();
+}
+
+// grid that draws the borders for rectangles
+// this breaks the circles rendered making them
+// appear like they have been drawn as hatches for each rectangle
+function makegrid(){
+  let rows = height/s;
+  let cols = width/s;
+  noFill();
+  for(let i = -1; i &lt;= rows; i++){
+    for(let j = -1; j &lt;= cols; j++){
+        let x = j*s;
+        let y = i*s;
+        push();
+        translate(x,y);
+        strokeWeight(6);
+        stroke(255);
+        noFill();
+        rect(0,0,s,s);
+        if(random(1) &gt; 0.95){
+          //for variations uncomment the following 2 lines
+          fill(0);
+          ellipse(0,0,s,s);
+        }
+        pop();
+    }
+  }
+}
+
+</code></pre></div></div>
+
+<hr />
+
+<p>This is a series which draws noisy circles over a grid of rectangles filled with random colours.</p>
+
+<p>The code is a bit messy and roughly works as follows.</p>
+
+<ol>
+  <li>
+    <p>makeGrid1() draws rectangles in the form of a grid filled with different random colours (chosen from a fixed palette)</p>
+  </li>
+  <li>
+    <p>render() draws concentric noisy circles over this grid.</p>
+  </li>
+  <li>
+    <p>render() first calls cpolygon() which is a function to draw concentric polygons.</p>
+  </li>
+  <li>
+    <p>cpolygon() calls mpolygon() which is a function to draw each noisy circle.To make the circle appear hand drawn mpolygon() calls polygon() function</p>
+  </li>
+  <li>
+    <p>polygon() function draws the noisy circle.The circle is drawn with same radius on each call but noise levels are different on each call to the function.To change the noise on each call, time based simplex noise is used as below.</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> let t = millis()/1000;
+ // change noise .05 to .1,.2,.01 etc
+ let rn = simplexNoise.noise4D(.05*x,0.05*sy,r*cos(2*PI*t),r*sin(2*PI*t));
+</code></pre></div>    </div>
+
+    <p>Since t changes on each call the noise also changes.</p>
+  </li>
+  <li>
+    <p>Finally makegrid() is called to draw the borders for the original rectangles drawn in makegrid1().This breaks the circles rendered making them appear like they have been drawn as hatches for each rectangle.</p>
+  </li>
+</ol>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

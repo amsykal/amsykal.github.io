@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Arcs in Grid</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Arcs in Grid</h1>
+<p class="meta">27 Jan 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Ethan Canin:’What’s more interesting than the arc of lives?’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/015a.png" />
+<img src="/images/015b.png" /><br />
+<img src="/images/015d.png" /><br />
+<img src="/images/015e.png" /><br />
+<img src="/images/015f.png" /><br />
+<img src="/images/015g.png" /><br />
+<img src="/images/015h.png" />
+<img src="/images/015i.png" /><br />
+<img src="/images/015j.png" /><br />
+<img src="/images/015k.png" /><br />
+<img src="/images/015l.png" />
+<img src="/images/015m.png" /><br />
+<img src="/images/015n.png" /></p>
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// grid
+// divide into cells
+// further divide each cells into more subcells randomly
+// end result - different rcell sizes
+// each cell is filled with arcs
+// arcs face random directions and have random colors
+// directions - top right, bottom right, top left, bottom left
+// other variations - spacing between arcs, noise level, fill or no fill
+// alpha levels and strokeWeights
+
+let s,c;
+let colors = [];
+let simplexNoise;
+let seed;
+
+function setup(){
+  createCanvas(600,600);
+  background(250);
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  seed = 100;
+  colors = [color( 1, 41, 95),color( 67, 127, 151),color(132, 147, 36),
+            color(255, 179, 15),color(253, 21, 27)];
+}
+
+function draw(){
+  noLoop();
+  makeGrid();
+}
+
+function makeGrid(){
+  // size of each cell in grid, change for variations
+  c = 60;
+  let rows = height/c;
+  let cols = width/c;
+  for(let i = 1; i &lt; rows-1; i++){
+    for(let j = 1; j &lt; cols-1; j++){
+      let x = j*c;
+      let y = i*c;
+      push();
+      translate(x,y);
+      // choose whether or not to break a cell further
+      let ch = random(1);
+      if (ch &lt;= 0.5){
+        render(c);
+      }
+      else {
+        // break the cell into n subcells
+        let n = random([2,3]);
+        breakCell(n);
+      }
+      pop();
+    }
+  }
+}
+
+// further break down of each cell in the grid
+function breakCell(n){
+  s = c/n;
+  for(let i = 0; i &lt; n; i++){
+    for(let j = 0; j &lt; n; j++){
+      let x = j*s;
+      let y = i*s;
+      push();
+      translate(x,y);
+      render(s);
+      pop();
+    }
+  }
+}
+
+// rendering for each cell
+function render(s){
+
+  // set up colors
+  // draw rectangles to partition and create margins between cells
+  fill(250);
+  strokeWeight(6);
+  stroke(250);
+  rect(0,0,s,s);
+
+
+  let cl = random(colors);
+  // change alpha
+  cl.setAlpha(220);
+  // option 1
+  strokeWeight(1);
+  stroke(0);
+  fill(cl);
+  // option 2
+  // change weight
+  strokeWeight(3);
+  //stroke(cl);
+  //noFill();
+
+  // deciding direction for arcs based on random
+  let k = 1
+  let ch = random(1);
+  if (ch &lt; 0.25){
+    cp(0,0,k*s,0,PI/2)
+  }
+  else if (ch &lt; 0.5){
+    cp(k*s,0,k*s,PI/2,PI);
+  }
+  else if (ch &lt; 0.75){
+    cp(0,k*s,k*s,1.5*PI,2*PI);
+  }
+  else {
+    cp(k*s,k*s,k*s,PI,1.5*PI);
+  }
+}
+
+// concentric arcs
+function cp(x, y, radius,start,end) {
+  for(let r = 0; r &lt; radius; r+= 4){
+    polygon(x, y, r,start,end);
+
+  }
+  // uncomment if you want lines within arcs
+  //polygon1(x, y,radius,start,end)
+}
+
+// to draw arcs
+function polygon(x, y, radius,start,end) {
+  push();
+  translate(x,y);
+  beginShape();
+  // drawing arcs
+  for (let a = start - PI/100; a &lt;= end+PI/100; a+= PI/150) {
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    // change r to change noise levels
+    let r = 6;
+    let rn = simplexNoise.noise2D(seed+.025*x,seed+.025*sy);
+    let sx1 = sx + r*rn*cos(a);
+    let sy1 = sy + r*rn*sin(a);
+    //vertex(sx,sy);
+    vertex(sx1,sy1);
+  }
+  endShape();
+  pop();
+
+}
+
+// to draw lines within arcs
+function polygon1(x, y, radius,start,end) {
+  push();
+  translate(x,y);
+  beginShape();
+  for (let a = start - PI/100; a &lt;= end+PI/100; a+= PI/10) {
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    // some variations have white lines intersecting black arcs -
+    // gives broken arc appearance
+    strokeWeight(1);
+    stroke(0);
+    line(0,0,sx,sy);
+  }
+  endShape();
+  pop();
+}
+
+</code></pre></div></div>
+
+<hr />
+
+<p>This series of sketches presents arcs.</p>
+
+<p>The canvas is first divided into cells of uniform size.</p>
+
+<p>Each cell is further divided into a random number of subcells.
+In each subcell, concentric arcs are drawn.</p>
+
+<p>Variations are obtained in a number of ways like randomising colours, spacing between arcs,orientation of arc,using filled arcs or just using the outlines,noise levels (of 2d simplex noise)</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

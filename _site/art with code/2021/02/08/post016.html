@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Noisy Circles</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Noisy Circles</h1>
+<p class="meta">08 Feb 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Until the Ribbon Breaks:</p>
+</blockquote>
+
+<blockquote>
+  <p>‘Sitting ducks on razor blades<br />
+Just waiting to be swallowed by the soup,<br />
+The repetition of a bad dream<br />
+A loop within a loop within a loop’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/016a.png" />
+<img src="/images/016b.png" /><br />
+<img src="/images/016d.png" /><br />
+<img src="/images/016e.png" /><br />
+<img src="/images/016f.png" /><br />
+<img src="/images/016g.png" /><br />
+<img src="/images/016h.png" />
+<img src="/images/016i.png" /><br />
+<img src="/images/016j.png" /><br />
+<img src="/images/016k.png" /><br />
+<img src="/images/016l.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// circles based on simplex noise
+// 3 sets of circles with different shades (colors)
+
+let simplexNoise,seed;
+
+function setup(){
+  createCanvas(600,600);
+  background(255, 235, 196);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+}
+
+function draw(){
+  noLoop();
+  push();
+  // shift origin to center
+  translate(width/2,height/2);
+  // draw the sketch
+  render();
+  pop();
+}
+
+function render(){
+  // set up the colors
+  // we alternate between cl and sl for different sets of circles
+
+  let cl = color(15, 19, 57);
+  cl.setAlpha(100);
+  let sl = color(255, 235, 196);
+  sl.setAlpha(75);
+  noFill();
+
+  // outer most circles
+  stroke(cl);
+  for(let r = 100; r &lt; 600; r += 20){
+    let start = random(2*PI);
+    let end = start + random(2*PI);
+    polygon(r/2,start,start+2*PI);
+  }
+
+  // second set
+  stroke(sl);
+  for(let r = 50; r &lt; 350; r += 20){
+    let start = random(2*PI);
+    let end = start + random(2*PI);
+    polygon(r/2,start,start+2*PI);
+  }
+
+  // third set
+  stroke(cl);
+  for(let r = 50; r &lt; 250; r += 20){
+    let start = random(2*PI);
+    let end = start + random(2*PI);
+    polygon(r/2,start,start+2*PI);
+  }
+
+  //inner most circles
+  stroke(sl);
+  for(let r = 50; r &lt; 100; r += 20){
+    let start = random(2*PI);
+    let end = start + random(2*PI);
+    polygon(r/2,start,start+2*PI);
+  }
+}
+
+// simple function to draw polygon of any number of sides
+function polygon(radius, start, end) {
+  beginShape();
+  // choose small increment for a so we get a circle
+  for (let a = start; a &lt; end; a+= PI/250) {
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    // change r from 5 to 75 for variations
+    let r = 50;
+    // change .005 from .001 to 0.5 for variations
+    let rn = simplexNoise.noise2D(0.05*sx,0.05*sy);
+    let sx1 = sx + r*rn*cos(a);
+    let sy1 = sy + r*rn*sin(a);
+    // for variations uncomment the line below
+    //vertex(sx,sy);
+    vertex(sx1,sy1);
+    line(0,0,sx1,sy1)
+  }
+  endShape();
+}
+
+</code></pre></div></div>
+
+<hr />
+
+<p>This series uses 2d simplex noise to make circles.</p>
+
+<p>4 sets of circles are drawn with alternating colours.</p>
+
+<p>Variations include changing noise levels and alpha values.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

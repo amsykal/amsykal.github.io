@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Noisy Meshes in A Grid </title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Noisy Meshes in A Grid </h1>
+<p class="meta">08 Feb 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Simon &amp; Garfunkel:</p>
+</blockquote>
+
+<blockquote>
+  <p>Impaled on my wall<br />
+   My eyes can dimly see<br />
+   The pattern of my life<br />
+   And the puzzle that is me</p>
+</blockquote>
+
+<blockquote>
+  <p>From the moment of my birth<br />
+   To the instant of my death<br />
+   There are patterns I must follow<br />
+   Just as I must breathe each breath</p>
+</blockquote>
+
+<blockquote>
+  <p>Like a rat in a maze<br />
+   The path before me lies<br />
+   And the pattern never alters<br />
+   Until the rat dies.’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/018a.png" />
+<img src="/images/018b.png" /><br />
+<img src="/images/018d.png" /><br />
+<img src="/images/018e.png" /><br />
+<img src="/images/018f.png" /><br />
+<img src="/images/018g.png" /><br />
+<img src="/images/018h.png" />
+<img src="/images/018i.png" /><br />
+<img src="/images/018j.png" /><br />
+<img src="/images/018k.png" /><br />
+<img src="/images/018l.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// grid
+// grid is divided into cells (makeGrid1)
+// in each cell, we draw a mesh
+// this mesh is created using noise (makeGrid)
+// render the mesh (render)
+// this series render in black and white
+// next set is the same code but in color
+// for variations change cell size, mesh cell size, noise levels
+
+let simplexNoise;
+let colors = [];
+// cell size
+// change size for variations
+let s;
+let c,k;
+
+// array to store coordinates of points
+let points = [];
+
+function setup(){
+  createCanvas(600,600);
+  background(0);
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  // palette , used in next sketch
+  // this sketch is black and white
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+  // set intial noise
+  k = 0.005;
+}
+
+function draw(){
+  noLoop();
+  background(255);
+  push();
+  // divide grid into cells
+  makeGrid1();
+  pop();
+}
+
+function makeGrid1(){
+  // size of each cell in grid, change for variations
+  c = 120;
+  let rows = height/c;
+  let cols = width/c;
+  noFill();
+  for(let i = 1; i &lt; rows-1; i++){
+    for(let j = 1; j &lt; cols-1; j++){
+      let x = j*c
+      let y = i*c
+      push();
+      translate(x,y);
+      // create the mesh
+      makeGrid();
+      // draw the mesh
+      render();
+      pop();
+    }
+  }
+}
+
+// function to store the points of each cell in the mesh.
+function makeGrid(){
+  // size of each cell of mesh within each cell of grid
+  s = 6;
+  points = [];
+  let r = 2;
+  push();
+  // spacing between rows and columns
+  let rows = 0.8*c/s;
+  let cols = 0.8*c/s;
+  for(let i = 0; i &lt;= rows; i++){
+    points[i] = [];
+    for(let j = 0; j &lt;= cols; j++){
+      points[i][j] = [];
+      let x = j*s+s/2;
+      let y = i*s+s/2;
+      // get offset for x and y based on 4d simplex noise
+      // change 6*s to s, 2*s etc
+      // higher values -- noisier
+      let xx = (2*s)*simplexNoise.noise2D(k*x,k*y);
+      let yy = (2*s)*simplexNoise.noise2D(1000+k*x,k*y);
+      // new corner points
+      points[i][j] = [x+xx,y+yy];
+    }
+  }
+  pop();
+}
+
+// function to extract the points of each cell and draw it
+function render(){
+  k += 0.001;
+  // go over the points and stitch them together
+  // to form the rectangles
+  for(let i = 0; i &lt; points.length-1; i++){
+    for(let j = 0; j &lt; points.length-1; j++){
+      // get the points of the rectangle (modified)
+      let rpoints = [];
+      rpoints[0] = [points[i][j][0],points[i][j][1]];
+      rpoints[1] = [points[i+1][j][0],points[i+1][j][1]];
+      rpoints[2] = [points[i+1][j+1][0],points[i+1][j+1][1]];
+      rpoints[3] = [points[i][j+1][0],points[i][j+1][1]];
+      let r = 1.5;
+      // draw the rectangle with new points
+      noFill();
+      stroke(0);
+      strokeWeight(2);
+      let cl = random(colors);
+      cl.setAlpha(255);
+      //fill(cl);
+      for (let p = 0; p &lt; 1; p+=1){
+        beginShape();
+        for (let k = 0; k &lt; rpoints.length; k++){
+          let x = rpoints[k][0];
+          let y = rpoints[k][1];
+          vertex(x+p,y+p);
+        }
+        endShape(CLOSE);
+      }
+    }
+  }
+}
+
+</code></pre></div></div>
+
+<hr />
+
+<p>This series presents noisy meshes in a grid.</p>
+
+<p>First we make a grid dividing the canvas into smaller canvases or cells.The function makeGrid1() performs this task.</p>
+
+<p>Next, we loop through the cells and in each cell we make a mesh.
+This is done by first storing the points of each corner of the cells (rectangles) in the mesh in a 2d array.But before storing them, we slightly displace the points using simplex noise.The function makeGrid() handles this task.</p>
+
+<p>Next we call render() to draw the rectangles.</p>
+
+<p>This is done by first extracting the points from the 2d array and then stitching them back together.</p>
+
+<p>The comments in the code walks you through the process.</p>
+
+<p>The variations result from using different grid sizes and noise levels.</p>
+
+<p>```</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

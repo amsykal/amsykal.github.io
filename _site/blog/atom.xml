@@ -4,13 +4,1539 @@
 	<title>Blog</title>
 	<link href="http://amsykal.github.io/blog/atom.xml" rel="self"/>
 	<link href="http://amsykal.github.io/blog"/>
-	<updated>2021-01-14T20:57:00+05:30</updated>
+	<updated>2021-02-09T16:27:40+05:30</updated>
 	<id>http://amsykal.github.io/blog</id>
 	<author>
 		<name>Lakshmi</name>
 		<email>a.lakshmi.s@gmail.com</email>
 	</author>
 
+	
+		<entry>
+			<title>Art with Code: Noisy Arcs In A Grid</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/09/post022.html"/>
+			<updated>2021-02-09T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/09/post022</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Richard Feynman:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;‘The thing that doesn’t fit is the thing that’s the most interesting: the part that doesn’t go according to what you expected.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022g.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022h.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022i.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022j.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022k.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022l.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022m.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022n.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022o.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022p.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/022q.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let s;
+let colors = [];
+let seed,simplexNoise;
+
+function setup(){
+  createCanvas(600,600);
+  // change bg according to monochromatic or multihued
+  //background(230, 230, 230);
+  background(70);
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  seed = 0;
+  // palette - monochromatic and multihued
+  //colors = [color(12, 32, 32)];
+  colors = [color( 228, 87, 46),color(41, 51, 92),color(243, 167, 18),
+          color(102, 155, 188),color(168, 198, 134)];
+}
+
+function draw(){
+  noLoop();
+  makeGrid();
+}
+
+function makeGrid(){
+  // cell size - change for variations
+  s = 50;
+  let rows = height/s;
+  let cols = width/s;
+  n = rows*cols;
+  let ang = 0;
+  for(let i = 0; i &amp;lt; cols; i++){
+    for(let j = 0; j &amp;lt; rows; j++){
+      let x = i*s+s/2;
+      let y = j*s+s/2;
+      push();
+      translate(x,y);
+      // uncomment for rotation
+      //rotate(ang);
+      render();
+      ang += (2*PI)/n;
+      seed += 1000;
+      pop();
+    }
+  }
+}
+
+
+function render(){
+
+  // set colors
+  let cl = random(colors);
+  cl.setAlpha(40);
+  stroke(0,120);
+  noFill();
+  fill(cl);
+
+  // multilined rectangle
+  mpolygon(0,0,0.5*s,PI/4,PI/4+2*PI,(2*PI)/4);
+
+  // arc design within each rectangle
+  // let random decide direction and placement of arc pattern
+  let start,end;
+  stroke(5,250);
+  let ch = random(1);
+  if(ch &amp;lt; 0.25){
+    start = 0;
+    end = start + PI/2;
+    cpolygon(-0.3*s,-0.3*s,0.65*s,start,end,(2*PI)/40);
+  }
+  else if (ch &amp;lt; 0.5){
+    start = PI/2;
+    end = start + PI/2;
+    cpolygon(0.3*s,-0.3*s,0.65*s,start,end,(2*PI)/40);
+  }
+  else if (ch &amp;lt; 0.75){
+    start = PI;
+    end = start + PI/2;
+    cpolygon(0.3*s,0.3*s,0.65*s,start,end,(2*PI)/40);
+  }
+  else{
+    start = 1.5*PI;
+    end = start + PI/2;
+    cpolygon(-0.3*s,0.3*s,0.65*s,start,end,(2*PI)/40);
+  }
+}
+
+// draw polygon multiple times to get handdrawn effect
+function mpolygon(x, y, radius, start, end, inc){
+  for(let r = 0; r &amp;lt; 5; r+= 1){
+    seed += 1000;
+    polygon(x, y, radius, start, end, inc);
+  }
+}
+
+// used here to draw the patterned arcs
+function cpolygon(x, y, radius, start, end, inc){
+  for(let r = 10; r &amp;lt; radius; r+= 3){
+    seed += 1000;
+    polygon(x, y, r, start, end, inc);
+
+  }
+}
+
+// n sided polygon defined by start and end angles
+// inc is angle between 2 sides
+function polygon(x, y, radius, start, end, inc) {
+  push();
+  translate(x,y);
+  beginShape();
+  for (let a = start; a &amp;lt;= end; a+= inc) {
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    let t = millis()/1000;
+    // change .1 to .001,.01, etc for variations
+    let sn = simplexNoise.noise4D(seed+.001*x,seed+0.001*y,cos(2*PI*t),sin(2*PI*t));
+    let sc = 10;
+    let sx1 = sx + sc*sn;
+    let sy1 = sy + sc*sn;
+    // original and displaced vertices - gives a back and forth line stroke
+    vertex(sx,sy);
+    vertex(sx1,sy1);
+  }
+  endShape();
+  pop();
+}
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This presents arc based patterns in a grid.There is an attempt to make the sketches appear hand drawn.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;makegrid() divides the canvas into a grid of cells&lt;/li&gt;
+  &lt;li&gt;each cell calls render()&lt;/li&gt;
+  &lt;li&gt;render() in turn calls mpolygon() followed by multiple calls to cpolygon() to draw patterned arcs&lt;/li&gt;
+  &lt;li&gt;mpolygon() depends on time based simplex noise to draw rectangles that appear hand drawn.&lt;/li&gt;
+  &lt;li&gt;calls to cpolygon() is randomized. random function decides the orientation of arcs&lt;/li&gt;
+  &lt;li&gt;cpolygon() draws concentric arcs by calling polygon() function&lt;/li&gt;
+  &lt;li&gt;polygon() finally renders the arcs which is also controlled by simplex noise.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;More details of implementation can be found as comments in the code.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Noisy Circles And A Grid</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/09/post021.html"/>
+			<updated>2021-02-09T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/09/post021</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Edwin Markham:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;‘He drew a circle that shut me out —&lt;br /&gt;
+Heretic, rebel, a thing to flout.&lt;br /&gt;
+But Love and I had the wit to win:&lt;br /&gt;
+We drew a circle that took him in!’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/021a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/021b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/021c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/021d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/021e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/021f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/021g.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/021h.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/021i.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/021j.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let simplexNoise;
+let s;
+let colors = [];
+
+function setup(){
+  createCanvas(600,600);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  colors = [color(127, 183, 190),color(211, 243, 238),
+            color(218, 204, 62),color(188, 44, 26),
+            color(125, 21, 56)];
+}
+
+function draw(){
+  noLoop();
+  background(255);
+  // size of each cell - change for variations
+  s = 60;
+  makegrid1();
+  render();
+  makegrid();
+}
+
+// initial grid of cells that colors them with a random color
+function makegrid1(){
+  let rows = height/s;
+  let cols = width/s;
+  noFill();
+  for(let i = -1; i &amp;lt;= rows; i++){
+    for(let j = -1; j &amp;lt;= cols; j++){
+        let x = j*s;
+        let y = i*s;
+        push();
+        translate(x,y);
+        strokeWeight(6);
+        stroke(255);
+        let cl = random(colors);
+        cl.setAlpha(255);
+        fill(cl);
+        rect(0,0,s,s);
+        pop();
+    }
+  }
+}
+
+// draw the black noisy circles
+function render(){
+  //cpolygon(-50,-50,2*width, 0, 2*PI, PI/250);
+  //cpolygon(width+100,height+100,2*width, 0, 2*PI, PI/250);
+  //cpolygon(width+50,-50,2*width, 0, 2*PI, PI/250);
+  //cpolygon(-50,height+50,2*width, 0, 2*PI, PI/250);
+  cpolygon(0.5*width,0.5*height,2*width, 0, 2*PI, PI/250);
+  cpolygon(0.5*width,0.5*height,0.1*width, 0, 2*PI, PI/6);
+  //cpolygon(width+50,height+50,2*width, 0, 2*PI, PI/500);
+  //seed += 1000;
+}
+
+function cpolygon(x, y, radius, start, end, inc){
+  // change 10 (spacing between concentric circles to other values )
+  for(let r = 0; r &amp;lt; radius; r+= 10){
+    start = random(2*PI);
+    mpolygon(x, y, r, start, start+2*PI, inc);
+  }
+}
+
+// draw rectangle(polygon) multiple times to get handdrawn effect
+function mpolygon(x, y, radius, start, end, inc){
+  for(let r = 0; r &amp;lt; 4; r+= 0.5){
+    //seed += 1000;
+    polygon(x+r, y+r, radius, start, end, inc);
+  }
+}
+
+function polygon(x, y, radius, start, end, inc) {
+
+  push();
+  translate(x,y);
+  beginShape();
+  for (let a = start; a &amp;lt;= end; a+= inc) {
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    // change scaling from 1 to 20 for variations
+    let r = 10;
+    let t = millis()/1000;
+    // change noise .05 to .1,.2,.01 etc
+    let rn = simplexNoise.noise4D(.05*x,0.05*sy,r*cos(2*PI*t),r*sin(2*PI*t));
+    let sx2 = sx + r*rn*cos(a);
+    let sy2 = sy + r*rn*sin(a);
+    stroke(0,255);
+    strokeWeight(1);
+    noFill();
+    // change for variaiotns by uncommenting original vertex
+    //vertex(sx,sy);
+    vertex(sx2,sy2);
+  }
+  endShape(CLOSE);
+  pop();
+}
+
+// grid that draws the borders for rectangles
+// this breaks the circles rendered making them
+// appear like they have been drawn as hatches for each rectangle
+function makegrid(){
+  let rows = height/s;
+  let cols = width/s;
+  noFill();
+  for(let i = -1; i &amp;lt;= rows; i++){
+    for(let j = -1; j &amp;lt;= cols; j++){
+        let x = j*s;
+        let y = i*s;
+        push();
+        translate(x,y);
+        strokeWeight(6);
+        stroke(255);
+        noFill();
+        rect(0,0,s,s);
+        if(random(1) &amp;gt; 0.95){
+          //for variations uncomment the following 2 lines
+          fill(0);
+          ellipse(0,0,s,s);
+        }
+        pop();
+    }
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This is a series which draws noisy circles over a grid of rectangles filled with random colours.&lt;/p&gt;
+
+&lt;p&gt;The code is a bit messy and roughly works as follows.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;makeGrid1() draws rectangles in the form of a grid filled with different random colours (chosen from a fixed palette)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;render() draws concentric noisy circles over this grid.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;render() first calls cpolygon() which is a function to draw concentric polygons.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;cpolygon() calls mpolygon() which is a function to draw each noisy circle.To make the circle appear hand drawn mpolygon() calls polygon() function&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;polygon() function draws the noisy circle.The circle is drawn with same radius on each call but noise levels are different on each call to the function.To change the noise on each call, time based simplex noise is used as below.&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; let t = millis()/1000;
+ // change noise .05 to .1,.2,.01 etc
+ let rn = simplexNoise.noise4D(.05*x,0.05*sy,r*cos(2*PI*t),r*sin(2*PI*t));
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;Since t changes on each call the noise also changes.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Finally makegrid() is called to draw the borders for the original rectangles drawn in makegrid1().This breaks the circles rendered making them appear like they have been drawn as hatches for each rectangle.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Concentric Arcs in A Grid</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/09/post020.html"/>
+			<updated>2021-02-09T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/09/post020</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Stephen Chbosky, The Perks of Being a Wallflower:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;‘I don’t know if you’ve ever felt like that. That you wanted to sleep for a thousand years. Or just not exist. Or just not be aware that you do exist. Or something like that. I think wanting that is very morbid, but I want it when I get like this. That’s why I’m trying not to think. I just want it all to stop spinning.’’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/020e.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/020f.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/020g.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/020h.png&quot; /&gt;
+&lt;img src=&quot;/images/020i.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/020j.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/020a.png&quot; /&gt;
+&lt;img src=&quot;/images/020b.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/020c.png&quot; /&gt;
+&lt;img src=&quot;/images/020d.png&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// concentric arcs in a grid
+// size of each cell
+let s;
+
+
+function setup()
+{
+  createCanvas(600,600);
+  // palette option 1
+  background( 23, 28, 51);
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+  // palette option 2
+  // background(0);
+  // colors = [color(173, 88, 103),color( 87, 115, 153),color(189, 213, 234)
+  //            ,color(247, 247, 255), color(254, 95, 85)];
+
+}
+
+function draw()
+{
+  noLoop();
+  push();
+  makeGrid();
+  pop();
+}
+
+// create the grid
+function makeGrid(){
+
+  // size of each cell
+  s = 300;
+
+  // get number of rows and columns
+  let rows = height/s;
+  let cols = width/s;
+
+  // for each cell
+  for(let i = 0; i &amp;lt; rows; i++){
+    for(let j = 0; j &amp;lt; cols; j++){
+      push();
+      translate(i*s+s/2, j*s+s/2);
+      // fill the cell with arcs
+      render();
+      pop();
+    }
+  }
+
+}
+
+// the final arc drawing in each cell
+function render(){
+
+  // radius of innermost arc
+  let rmin = 0.01*s;
+
+  // radius of outermost arc
+  let rmax = 0.42*s;
+
+  // spacing between arcs
+  let rinc = 6;
+
+  // spacing between segments of arc of same radius
+  let inc = PI/1000;
+  // spacing between concurrent arcs starting point
+  let offset = 0;
+
+  for(let r = rmin; r&amp;lt;rmax; r+=rinc ){
+    // each arc of same radius with a random color
+    // or make it black and white
+    let cl = random(colors);
+    // while filling uncomment the line below - gives a glassy look to the arcs
+    cl.setAlpha(60);
+    fill(cl);
+    strokeWeight(3);
+    stroke(cl);
+    // comment line below if you want fill
+    //noFill();
+    let j = 0;
+    for(let a = offset; a &amp;lt; 2*PI+offset ; a+= inc){
+      if (j%2 == 0){
+        // add CHORD to line below for another variaiton
+          arc(0,0,2*r,2*r,a-inc/2,a+inc/2);
+        }
+        j += 1;
+    }
+
+    // try playing around with these values to get variations
+    // removing random gives more symmetric and predictable patterns
+    inc += random(PI/75);
+    offset -= random(PI/75);
+  }
+}
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series presents concentric arc based patterns in a grid.&lt;/p&gt;
+
+&lt;p&gt;makeGrid() takes care of dividing the canvas into mini canvases.(cells in a grid).render() is called from each cell to then draw patterns of concentric arcs.&lt;/p&gt;
+
+&lt;p&gt;Variations include randomising colours, angles at which arcs are drawn, spacing between arcs, grid size etc.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Noisy Meshes in A Grid: Coloured Version </title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/09/post019.html"/>
+			<updated>2021-02-09T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/09/post019</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Michael Shermer:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;‘Humans are pattern-seeking story-telling animals, and we are quite adept at telling stories about patterns, whether they exist or not.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/019a.png&quot; /&gt;
+&lt;img src=&quot;/images/019b.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/019d.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/019e.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/019f.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/019g.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/019h.png&quot; /&gt;
+&lt;img src=&quot;/images/019i.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/019j.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/019k.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/019l.png&quot; /&gt;
+&lt;img src=&quot;/images/019m.png&quot; /&gt;
+&lt;img src=&quot;/images/019n.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/019o.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/019p.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/019q.png&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// grid
+// grid is divided into cells (makeGrid1)
+// in each cell, we draw a mesh
+// this mesh is created using noise (makeGrid)
+// render the mesh (render)
+// code same as sketch 19 except this is in color
+// for variations change cell size, mesh cell size, noise levels
+
+let simplexNoise;
+let colors = [];
+// cell size
+// change size for variations
+let s;
+let c,k;
+
+// array to store coordinates of points
+let points = [];
+
+function setup(){
+  createCanvas(600,600);
+  background(0);
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  // palette , used in this sketch
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+  // set intial noise
+  k = 0.005;
+}
+
+function draw(){
+  noLoop();
+  background(255);
+  push();
+  // divide grid into cells
+  makeGrid1();
+  pop();
+}
+
+function makeGrid1(){
+  // size of each cell in grid, change for variations
+  c = 150;
+  let rows = height/c;
+  let cols = width/c;
+  noFill();
+  for(let i = 1; i &amp;lt; rows-1; i++){
+    for(let j = 1; j &amp;lt; cols-1; j++){
+      let x = j*c
+      let y = i*c
+      push();
+      translate(x,y);
+      // create the mesh
+      makeGrid();
+      // draw the mesh
+      render();
+      pop();
+    }
+  }
+}
+
+// function to store the points of each cell in the mesh.
+function makeGrid(){
+  // size of each cell of mesh within each cell of grid
+  s = 8;
+  points = [];
+  let r = 2;
+  push();
+  // spacing between rows and columns
+  let rows = 0.8*c/s;
+  let cols = 0.8*c/s;
+  for(let i = 0; i &amp;lt;= rows; i++){
+    points[i] = [];
+    for(let j = 0; j &amp;lt;= cols; j++){
+      points[i][j] = [];
+      let x = j*s+s/2;
+      let y = i*s+s/2;
+      // get offset for x and y based on 4d simplex noise
+      // change 6*s to s, 2*s etc
+      // higher values -- noisier
+      let xx = (1*s)*simplexNoise.noise2D(k*x,k*y);
+      let yy = (1*s)*simplexNoise.noise2D(1000+k*x,k*y);
+      // new corner points
+      points[i][j] = [x+xx,y+yy];
+    }
+  }
+  pop();
+}
+
+// function to extract the points of each cell and draw it
+function render(){
+  k += 0.001;
+  // go over the points and stitch them together
+  // to form the rectangles
+  for(let i = 0; i &amp;lt; points.length-1; i++){
+    for(let j = 0; j &amp;lt; points.length-1; j++){
+      // get the points of the rectangle (modified)
+      let rpoints = [];
+      rpoints[0] = [points[i][j][0],points[i][j][1]];
+      rpoints[1] = [points[i+1][j][0],points[i+1][j][1]];
+      rpoints[2] = [points[i+1][j+1][0],points[i+1][j+1][1]];
+      rpoints[3] = [points[i][j+1][0],points[i][j+1][1]];
+      let r = 1.5;
+      // draw the rectangle with new points
+      noFill();
+      stroke(0);
+      strokeWeight(2);
+      let cl = random(colors);
+      cl.setAlpha(255);
+      fill(cl);
+      for (let p = 0; p &amp;lt; 1; p+=1){
+        beginShape();
+        for (let k = 0; k &amp;lt; rpoints.length; k++){
+          let x = rpoints[k][0];
+          let y = rpoints[k][1];
+          vertex(x+p,y+p);
+        }
+        endShape(CLOSE);
+      }
+    }
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series is the coloured version of the &lt;a href=&quot;&quot;&gt;previous series&lt;/a&gt;.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Noisy Meshes in A Grid </title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/08/post018.html"/>
+			<updated>2021-02-08T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/08/post018</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Simon &amp;amp; Garfunkel:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Impaled on my wall&lt;br /&gt;
+   My eyes can dimly see&lt;br /&gt;
+   The pattern of my life&lt;br /&gt;
+   And the puzzle that is me&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;From the moment of my birth&lt;br /&gt;
+   To the instant of my death&lt;br /&gt;
+   There are patterns I must follow&lt;br /&gt;
+   Just as I must breathe each breath&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Like a rat in a maze&lt;br /&gt;
+   The path before me lies&lt;br /&gt;
+   And the pattern never alters&lt;br /&gt;
+   Until the rat dies.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/018a.png&quot; /&gt;
+&lt;img src=&quot;/images/018b.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/018d.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/018e.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/018f.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/018g.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/018h.png&quot; /&gt;
+&lt;img src=&quot;/images/018i.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/018j.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/018k.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/018l.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// grid
+// grid is divided into cells (makeGrid1)
+// in each cell, we draw a mesh
+// this mesh is created using noise (makeGrid)
+// render the mesh (render)
+// this series render in black and white
+// next set is the same code but in color
+// for variations change cell size, mesh cell size, noise levels
+
+let simplexNoise;
+let colors = [];
+// cell size
+// change size for variations
+let s;
+let c,k;
+
+// array to store coordinates of points
+let points = [];
+
+function setup(){
+  createCanvas(600,600);
+  background(0);
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  // palette , used in next sketch
+  // this sketch is black and white
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+  // set intial noise
+  k = 0.005;
+}
+
+function draw(){
+  noLoop();
+  background(255);
+  push();
+  // divide grid into cells
+  makeGrid1();
+  pop();
+}
+
+function makeGrid1(){
+  // size of each cell in grid, change for variations
+  c = 120;
+  let rows = height/c;
+  let cols = width/c;
+  noFill();
+  for(let i = 1; i &amp;lt; rows-1; i++){
+    for(let j = 1; j &amp;lt; cols-1; j++){
+      let x = j*c
+      let y = i*c
+      push();
+      translate(x,y);
+      // create the mesh
+      makeGrid();
+      // draw the mesh
+      render();
+      pop();
+    }
+  }
+}
+
+// function to store the points of each cell in the mesh.
+function makeGrid(){
+  // size of each cell of mesh within each cell of grid
+  s = 6;
+  points = [];
+  let r = 2;
+  push();
+  // spacing between rows and columns
+  let rows = 0.8*c/s;
+  let cols = 0.8*c/s;
+  for(let i = 0; i &amp;lt;= rows; i++){
+    points[i] = [];
+    for(let j = 0; j &amp;lt;= cols; j++){
+      points[i][j] = [];
+      let x = j*s+s/2;
+      let y = i*s+s/2;
+      // get offset for x and y based on 4d simplex noise
+      // change 6*s to s, 2*s etc
+      // higher values -- noisier
+      let xx = (2*s)*simplexNoise.noise2D(k*x,k*y);
+      let yy = (2*s)*simplexNoise.noise2D(1000+k*x,k*y);
+      // new corner points
+      points[i][j] = [x+xx,y+yy];
+    }
+  }
+  pop();
+}
+
+// function to extract the points of each cell and draw it
+function render(){
+  k += 0.001;
+  // go over the points and stitch them together
+  // to form the rectangles
+  for(let i = 0; i &amp;lt; points.length-1; i++){
+    for(let j = 0; j &amp;lt; points.length-1; j++){
+      // get the points of the rectangle (modified)
+      let rpoints = [];
+      rpoints[0] = [points[i][j][0],points[i][j][1]];
+      rpoints[1] = [points[i+1][j][0],points[i+1][j][1]];
+      rpoints[2] = [points[i+1][j+1][0],points[i+1][j+1][1]];
+      rpoints[3] = [points[i][j+1][0],points[i][j+1][1]];
+      let r = 1.5;
+      // draw the rectangle with new points
+      noFill();
+      stroke(0);
+      strokeWeight(2);
+      let cl = random(colors);
+      cl.setAlpha(255);
+      //fill(cl);
+      for (let p = 0; p &amp;lt; 1; p+=1){
+        beginShape();
+        for (let k = 0; k &amp;lt; rpoints.length; k++){
+          let x = rpoints[k][0];
+          let y = rpoints[k][1];
+          vertex(x+p,y+p);
+        }
+        endShape(CLOSE);
+      }
+    }
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series presents noisy meshes in a grid.&lt;/p&gt;
+
+&lt;p&gt;First we make a grid dividing the canvas into smaller canvases or cells.The function makeGrid1() performs this task.&lt;/p&gt;
+
+&lt;p&gt;Next, we loop through the cells and in each cell we make a mesh.
+This is done by first storing the points of each corner of the cells (rectangles) in the mesh in a 2d array.But before storing them, we slightly displace the points using simplex noise.The function makeGrid() handles this task.&lt;/p&gt;
+
+&lt;p&gt;Next we call render() to draw the rectangles.&lt;/p&gt;
+
+&lt;p&gt;This is done by first extracting the points from the 2d array and then stitching them back together.&lt;/p&gt;
+
+&lt;p&gt;The comments in the code walks you through the process.&lt;/p&gt;
+
+&lt;p&gt;The variations result from using different grid sizes and noise levels.&lt;/p&gt;
+
+&lt;p&gt;```&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Noisy Lines in A Grid </title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/08/post017.html"/>
+			<updated>2021-02-08T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/08/post017</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Chuck Palahniuk:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;‘There are only patterns, patterns on top of patterns, patterns that affect other patterns.Patterns hidden by patterns.Patterns within patterns.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;If you watch close, history does nothing but repeat itself.
+What we call chaos is just patterns we haven’t recognized.What we call random is just patterns we can’t decipher. what we can’t understand we call nonsense. What we can’t read we call gibberish.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;There is no free will.
+There are no variables.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/017a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/017b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/017d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/017e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/017f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/017g.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/017h.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/017i.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// grid
+// every cell has horizontal noisy lines
+// diagonal lines in background color drawn
+// effect - broken scribbles
+// noise level, cell size changed for variations
+
+let s;
+let simplexNoise;
+let seed;
+
+function setup(){
+  createCanvas(600,600);
+  background(23, 28, 51);
+  // palette
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  // cell size
+  s = 200;
+  // seed to be incremented for every cell
+  seed = 0;
+}
+
+function draw(){
+  noLoop();
+  makegrid();
+}
+
+function makegrid(){
+  let rows = height/s;
+  let cols = width/s;
+  // make a grid of cells
+  // g is gap between lines within a cell
+  let g = 10;
+  for(let i = 0; i &amp;lt; rows; i++){
+    for(let j = 0; j &amp;lt; cols; j++){
+      let x = j*s;
+      let y = i*s;
+      push();
+      translate(x,y);
+      // in each cell draw horizontal noisy lines
+      // changing the gap between the lines, the noise input etc
+      // gives variations
+      render(g);
+      pop();
+    }
+    // the gap between 2 lines within a cell
+    // we increment this gap by 2 for every row
+    // so as we go down the rows there is more space
+     g += 2;
+  }
+}
+
+function render(g){
+
+  // set color, style etc
+  let fl = color(238, 240, 242);
+  fl.setAlpha(255);
+  stroke(fl);
+  noFill();
+  strokeWeight(2);
+
+  // margin to be left for each cell on all sides
+  let m = 12;
+
+  // change seed for every cell to get different patterns
+  seed += 1000
+  // drawing the lines
+  for(let i = m; i &amp;lt;= s-m; i+=g){
+    //let t = millis()/1000;
+    beginShape();
+    for(let x = m; x &amp;lt;= s-m; x+=g){
+      // try changing .01 to 0.001,0.1 etc
+      let sc = 10;
+      // change .01 to different values and combinations for y1 y2
+      let y1 = i+sc*simplexNoise.noise2D(seed+.05*x,seed+0.05*i);
+      let y2 = i+sc*simplexNoise.noise2D(2*seed+.1*x,2*seed+0.1*i);
+      vertex(x,y1);
+      vertex(x,y2);
+    }
+    endShape();
+  }
+
+  //diagonal lines to insert breaks in each horizontal line
+  for(let i = m; i &amp;lt;= s-m; i+= 2*g){
+    strokeWeight(2);
+    stroke(23, 28, 51);
+    line(0,i,i,0);
+    line(s-m,i,i,s-m);
+  }
+
+}
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series presents noisy lines in a grid.&lt;/p&gt;
+
+&lt;p&gt;The method used is very similar to the one used in &lt;a href=&quot;https://amsykal.github.io/art with code/2021/01/03/post008.html&quot;&gt;this previous series implementing noisy lines in a grid&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;To give the appearance of scribbles , the code introduces breaks between the horizontal lines by drawing spaced diagonal lines as below.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//diagonal lines to insert breaks in each horizontal line
+for(let i = m; i &amp;lt;= s-m; i+= 2*g){
+  strokeWeight(2);
+  stroke(23, 28, 51);
+  line(0,i,i,0);
+  line(s-m,i,i,s-m);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Noisy Circles</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/08/post016.html"/>
+			<updated>2021-02-08T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/08/post016</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Until the Ribbon Breaks:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;‘Sitting ducks on razor blades&lt;br /&gt;
+Just waiting to be swallowed by the soup,&lt;br /&gt;
+The repetition of a bad dream&lt;br /&gt;
+A loop within a loop within a loop’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/016a.png&quot; /&gt;
+&lt;img src=&quot;/images/016b.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/016d.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/016e.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/016f.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/016g.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/016h.png&quot; /&gt;
+&lt;img src=&quot;/images/016i.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/016j.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/016k.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/016l.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// circles based on simplex noise
+// 3 sets of circles with different shades (colors)
+
+let simplexNoise,seed;
+
+function setup(){
+  createCanvas(600,600);
+  background(255, 235, 196);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+}
+
+function draw(){
+  noLoop();
+  push();
+  // shift origin to center
+  translate(width/2,height/2);
+  // draw the sketch
+  render();
+  pop();
+}
+
+function render(){
+  // set up the colors
+  // we alternate between cl and sl for different sets of circles
+
+  let cl = color(15, 19, 57);
+  cl.setAlpha(100);
+  let sl = color(255, 235, 196);
+  sl.setAlpha(75);
+  noFill();
+
+  // outer most circles
+  stroke(cl);
+  for(let r = 100; r &amp;lt; 600; r += 20){
+    let start = random(2*PI);
+    let end = start + random(2*PI);
+    polygon(r/2,start,start+2*PI);
+  }
+
+  // second set
+  stroke(sl);
+  for(let r = 50; r &amp;lt; 350; r += 20){
+    let start = random(2*PI);
+    let end = start + random(2*PI);
+    polygon(r/2,start,start+2*PI);
+  }
+
+  // third set
+  stroke(cl);
+  for(let r = 50; r &amp;lt; 250; r += 20){
+    let start = random(2*PI);
+    let end = start + random(2*PI);
+    polygon(r/2,start,start+2*PI);
+  }
+
+  //inner most circles
+  stroke(sl);
+  for(let r = 50; r &amp;lt; 100; r += 20){
+    let start = random(2*PI);
+    let end = start + random(2*PI);
+    polygon(r/2,start,start+2*PI);
+  }
+}
+
+// simple function to draw polygon of any number of sides
+function polygon(radius, start, end) {
+  beginShape();
+  // choose small increment for a so we get a circle
+  for (let a = start; a &amp;lt; end; a+= PI/250) {
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    // change r from 5 to 75 for variations
+    let r = 50;
+    // change .005 from .001 to 0.5 for variations
+    let rn = simplexNoise.noise2D(0.05*sx,0.05*sy);
+    let sx1 = sx + r*rn*cos(a);
+    let sy1 = sy + r*rn*sin(a);
+    // for variations uncomment the line below
+    //vertex(sx,sy);
+    vertex(sx1,sy1);
+    line(0,0,sx1,sy1)
+  }
+  endShape();
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series uses 2d simplex noise to make circles.&lt;/p&gt;
+
+&lt;p&gt;4 sets of circles are drawn with alternating colours.&lt;/p&gt;
+
+&lt;p&gt;Variations include changing noise levels and alpha values.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Arcs in Grid</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/01/27/post015.html"/>
+			<updated>2021-01-27T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/01/27/post015</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Ethan Canin:’What’s more interesting than the arc of lives?’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/015a.png&quot; /&gt;
+&lt;img src=&quot;/images/015b.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/015d.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/015e.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/015f.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/015g.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/015h.png&quot; /&gt;
+&lt;img src=&quot;/images/015i.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/015j.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/015k.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/015l.png&quot; /&gt;
+&lt;img src=&quot;/images/015m.png&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/images/015n.png&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// grid
+// divide into cells
+// further divide each cells into more subcells randomly
+// end result - different rcell sizes
+// each cell is filled with arcs
+// arcs face random directions and have random colors
+// directions - top right, bottom right, top left, bottom left
+// other variations - spacing between arcs, noise level, fill or no fill
+// alpha levels and strokeWeights
+
+let s,c;
+let colors = [];
+let simplexNoise;
+let seed;
+
+function setup(){
+  createCanvas(600,600);
+  background(250);
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  seed = 100;
+  colors = [color( 1, 41, 95),color( 67, 127, 151),color(132, 147, 36),
+            color(255, 179, 15),color(253, 21, 27)];
+}
+
+function draw(){
+  noLoop();
+  makeGrid();
+}
+
+function makeGrid(){
+  // size of each cell in grid, change for variations
+  c = 60;
+  let rows = height/c;
+  let cols = width/c;
+  for(let i = 1; i &amp;lt; rows-1; i++){
+    for(let j = 1; j &amp;lt; cols-1; j++){
+      let x = j*c;
+      let y = i*c;
+      push();
+      translate(x,y);
+      // choose whether or not to break a cell further
+      let ch = random(1);
+      if (ch &amp;lt;= 0.5){
+        render(c);
+      }
+      else {
+        // break the cell into n subcells
+        let n = random([2,3]);
+        breakCell(n);
+      }
+      pop();
+    }
+  }
+}
+
+// further break down of each cell in the grid
+function breakCell(n){
+  s = c/n;
+  for(let i = 0; i &amp;lt; n; i++){
+    for(let j = 0; j &amp;lt; n; j++){
+      let x = j*s;
+      let y = i*s;
+      push();
+      translate(x,y);
+      render(s);
+      pop();
+    }
+  }
+}
+
+// rendering for each cell
+function render(s){
+
+  // set up colors
+  // draw rectangles to partition and create margins between cells
+  fill(250);
+  strokeWeight(6);
+  stroke(250);
+  rect(0,0,s,s);
+
+
+  let cl = random(colors);
+  // change alpha
+  cl.setAlpha(220);
+  // option 1
+  strokeWeight(1);
+  stroke(0);
+  fill(cl);
+  // option 2
+  // change weight
+  strokeWeight(3);
+  //stroke(cl);
+  //noFill();
+
+  // deciding direction for arcs based on random
+  let k = 1
+  let ch = random(1);
+  if (ch &amp;lt; 0.25){
+    cp(0,0,k*s,0,PI/2)
+  }
+  else if (ch &amp;lt; 0.5){
+    cp(k*s,0,k*s,PI/2,PI);
+  }
+  else if (ch &amp;lt; 0.75){
+    cp(0,k*s,k*s,1.5*PI,2*PI);
+  }
+  else {
+    cp(k*s,k*s,k*s,PI,1.5*PI);
+  }
+}
+
+// concentric arcs
+function cp(x, y, radius,start,end) {
+  for(let r = 0; r &amp;lt; radius; r+= 4){
+    polygon(x, y, r,start,end);
+
+  }
+  // uncomment if you want lines within arcs
+  //polygon1(x, y,radius,start,end)
+}
+
+// to draw arcs
+function polygon(x, y, radius,start,end) {
+  push();
+  translate(x,y);
+  beginShape();
+  // drawing arcs
+  for (let a = start - PI/100; a &amp;lt;= end+PI/100; a+= PI/150) {
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    // change r to change noise levels
+    let r = 6;
+    let rn = simplexNoise.noise2D(seed+.025*x,seed+.025*sy);
+    let sx1 = sx + r*rn*cos(a);
+    let sy1 = sy + r*rn*sin(a);
+    //vertex(sx,sy);
+    vertex(sx1,sy1);
+  }
+  endShape();
+  pop();
+
+}
+
+// to draw lines within arcs
+function polygon1(x, y, radius,start,end) {
+  push();
+  translate(x,y);
+  beginShape();
+  for (let a = start - PI/100; a &amp;lt;= end+PI/100; a+= PI/10) {
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    // some variations have white lines intersecting black arcs -
+    // gives broken arc appearance
+    strokeWeight(1);
+    stroke(0);
+    line(0,0,sx,sy);
+  }
+  endShape();
+  pop();
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series of sketches presents arcs.&lt;/p&gt;
+
+&lt;p&gt;The canvas is first divided into cells of uniform size.&lt;/p&gt;
+
+&lt;p&gt;Each cell is further divided into a random number of subcells.
+In each subcell, concentric arcs are drawn.&lt;/p&gt;
+
+&lt;p&gt;Variations are obtained in a number of ways like randomising colours, spacing between arcs,orientation of arc,using filled arcs or just using the outlines,noise levels (of 2d simplex noise)&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Art with Code: Lines in a Recursive Grid</title>
@@ -2570,7 +4096,7 @@ function render(s){
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;hr /&gt;
 
-&lt;p&gt;This is again a series based on the same f defined in &lt;a href=&quot;https://amsykal.github.io/github%20pages/2020/12/14/post002.html&quot;&gt;previous post&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;This is again a series based on the same f defined in &lt;a href=&quot;https://amsykal.github.io/art%20with%20code/2020/12/14/post002.html&quot;&gt;previous post&lt;/a&gt;&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;\large f(t)= e^{it} + \frac{1}{2}e^{imt} + \frac{i}{3}e^{-int}&lt;/script&gt;
 

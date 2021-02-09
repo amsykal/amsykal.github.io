@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Noisy Arcs In A Grid</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Noisy Arcs In A Grid</h1>
+<p class="meta">09 Feb 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Richard Feynman:</p>
+</blockquote>
+
+<blockquote>
+  <p>‘The thing that doesn’t fit is the thing that’s the most interesting: the part that doesn’t go according to what you expected.’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/022a.png" /></p>
+
+<p><img src="/images/022b.png" /></p>
+
+<p><img src="/images/022c.png" /></p>
+
+<p><img src="/images/022d.png" /></p>
+
+<p><img src="/images/022e.png" /></p>
+
+<p><img src="/images/022f.png" /></p>
+
+<p><img src="/images/022g.png" /></p>
+
+<p><img src="/images/022h.png" /></p>
+
+<p><img src="/images/022i.png" /></p>
+
+<p><img src="/images/022j.png" /></p>
+
+<p><img src="/images/022k.png" /></p>
+
+<p><img src="/images/022l.png" /></p>
+
+<p><img src="/images/022m.png" /></p>
+
+<p><img src="/images/022n.png" /></p>
+
+<p><img src="/images/022o.png" /></p>
+
+<p><img src="/images/022p.png" /></p>
+
+<p><img src="/images/022q.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let s;
+let colors = [];
+let seed,simplexNoise;
+
+function setup(){
+  createCanvas(600,600);
+  // change bg according to monochromatic or multihued
+  //background(230, 230, 230);
+  background(70);
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  seed = 0;
+  // palette - monochromatic and multihued
+  //colors = [color(12, 32, 32)];
+  colors = [color( 228, 87, 46),color(41, 51, 92),color(243, 167, 18),
+          color(102, 155, 188),color(168, 198, 134)];
+}
+
+function draw(){
+  noLoop();
+  makeGrid();
+}
+
+function makeGrid(){
+  // cell size - change for variations
+  s = 50;
+  let rows = height/s;
+  let cols = width/s;
+  n = rows*cols;
+  let ang = 0;
+  for(let i = 0; i &lt; cols; i++){
+    for(let j = 0; j &lt; rows; j++){
+      let x = i*s+s/2;
+      let y = j*s+s/2;
+      push();
+      translate(x,y);
+      // uncomment for rotation
+      //rotate(ang);
+      render();
+      ang += (2*PI)/n;
+      seed += 1000;
+      pop();
+    }
+  }
+}
+
+
+function render(){
+
+  // set colors
+  let cl = random(colors);
+  cl.setAlpha(40);
+  stroke(0,120);
+  noFill();
+  fill(cl);
+
+  // multilined rectangle
+  mpolygon(0,0,0.5*s,PI/4,PI/4+2*PI,(2*PI)/4);
+
+  // arc design within each rectangle
+  // let random decide direction and placement of arc pattern
+  let start,end;
+  stroke(5,250);
+  let ch = random(1);
+  if(ch &lt; 0.25){
+    start = 0;
+    end = start + PI/2;
+    cpolygon(-0.3*s,-0.3*s,0.65*s,start,end,(2*PI)/40);
+  }
+  else if (ch &lt; 0.5){
+    start = PI/2;
+    end = start + PI/2;
+    cpolygon(0.3*s,-0.3*s,0.65*s,start,end,(2*PI)/40);
+  }
+  else if (ch &lt; 0.75){
+    start = PI;
+    end = start + PI/2;
+    cpolygon(0.3*s,0.3*s,0.65*s,start,end,(2*PI)/40);
+  }
+  else{
+    start = 1.5*PI;
+    end = start + PI/2;
+    cpolygon(-0.3*s,0.3*s,0.65*s,start,end,(2*PI)/40);
+  }
+}
+
+// draw polygon multiple times to get handdrawn effect
+function mpolygon(x, y, radius, start, end, inc){
+  for(let r = 0; r &lt; 5; r+= 1){
+    seed += 1000;
+    polygon(x, y, radius, start, end, inc);
+  }
+}
+
+// used here to draw the patterned arcs
+function cpolygon(x, y, radius, start, end, inc){
+  for(let r = 10; r &lt; radius; r+= 3){
+    seed += 1000;
+    polygon(x, y, r, start, end, inc);
+
+  }
+}
+
+// n sided polygon defined by start and end angles
+// inc is angle between 2 sides
+function polygon(x, y, radius, start, end, inc) {
+  push();
+  translate(x,y);
+  beginShape();
+  for (let a = start; a &lt;= end; a+= inc) {
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    let t = millis()/1000;
+    // change .1 to .001,.01, etc for variations
+    let sn = simplexNoise.noise4D(seed+.001*x,seed+0.001*y,cos(2*PI*t),sin(2*PI*t));
+    let sc = 10;
+    let sx1 = sx + sc*sn;
+    let sy1 = sy + sc*sn;
+    // original and displaced vertices - gives a back and forth line stroke
+    vertex(sx,sy);
+    vertex(sx1,sy1);
+  }
+  endShape();
+  pop();
+}
+
+
+</code></pre></div></div>
+
+<hr />
+
+<p>This presents arc based patterns in a grid.There is an attempt to make the sketches appear hand drawn.</p>
+
+<ol>
+  <li>makegrid() divides the canvas into a grid of cells</li>
+  <li>each cell calls render()</li>
+  <li>render() in turn calls mpolygon() followed by multiple calls to cpolygon() to draw patterned arcs</li>
+  <li>mpolygon() depends on time based simplex noise to draw rectangles that appear hand drawn.</li>
+  <li>calls to cpolygon() is randomized. random function decides the orientation of arcs</li>
+  <li>cpolygon() draws concentric arcs by calling polygon() function</li>
+  <li>polygon() finally renders the arcs which is also controlled by simplex noise.</li>
+</ol>
+
+<p>More details of implementation can be found as comments in the code.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>
