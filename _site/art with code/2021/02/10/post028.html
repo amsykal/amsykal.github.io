@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Designs</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Designs</h1>
+<p class="meta">10 Feb 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Albert Einstein:</p>
+</blockquote>
+
+<blockquote>
+  <p>‘Life is a great tapestry. The individual is only an insignificant thread in an immense and miraculous pattern.’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/028a.png" /></p>
+
+<p><img src="/images/028b.png" /></p>
+
+<p><img src="/images/028c.png" /></p>
+
+<p><img src="/images/028d.png" /></p>
+
+<p><img src="/images/028e.png" /></p>
+
+<p><img src="/images/028f.png" /></p>
+
+<p><img src="/images/028h.png" /></p>
+
+<p><img src="/images/028i.png" /></p>
+
+<p><img src="/images/028j.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let s;
+let colors = [];
+let simplexNoise;
+let seed,k;
+
+function setup(){
+  createCanvas(600,600);
+  background(150);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+  seed = 10;
+}
+
+function draw(){
+  noLoop();
+  strokeWeight(1);
+  noFill();
+  // initialize noise level
+  k = 0.05;
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+  makegrid();
+}
+
+function makegrid(){
+  // change cell size as needed
+  s = 600;
+  let rows = height/s;
+  let cols = width/s;
+  for(let i = 0; i &lt;= rows; i++){
+    for(let j = 0; j &lt;= cols; j++){
+      let x = j*s - 0.5*s;
+      let y = i*s - 0.5*s;
+      push();
+      translate(x,y);
+      render();
+      pop();
+    }
+  }
+}
+
+function render(){
+  // horizontal
+  let inc = PI/10;
+  push();
+  for(let r = 100 ; r &lt; 0.45*s; r+= 4){
+    for(let a = 0; a &lt; PI; a+=inc){
+        let x1 = r*cos(a+PI/200);
+        let y1 = r*sin(a+PI/200);
+        let x2 = r*cos(a+inc-PI/200);
+        let y2 = r*sin(a+inc-PI/200);
+        // bottom half
+        nline(x1,y1,x2,y2,k);
+        // top half
+        nline(x1,-y1,x2,-y2,k);
+    }
+  }
+  pop();
+
+  // vertical - some variations uncomment this bit
+  for(let a = -PI/2; a &lt; PI/2; a+=PI/75){
+        stroke(0,100);
+        let x1 = 150*cos(a);
+        let y1 = 150*sin(a);
+        let x2 = 0.45*s*cos(a);
+        let y2 = 0.45*s*sin(a);
+        nline(x2,y2,x1,y1,0.1);
+        nline(-x1,-y1,-x2,-y2,0.1);
+  }
+}
+
+
+// draw noisy line between 2 coordinates
+// x1,y1 and x2,y2
+// k specifies how noisy
+function nline(x1,y1,x2,y2,k){
+
+  // change seed for every render
+  //seed += 1000;
+  // compute distance between 2 lines
+  let d = dist(x1,y1,x2,y2);
+  // how much do you want to scale the noise ?
+  let sc = 10;
+  // angle by which to rotate line
+  let ang = atan((y2-y1)/(x2-x1));
+  // readjust coordinates etc to get proper alignment of line
+  push();
+  translate(x2,y2);
+  rotate(ang);
+  beginShape();
+
+  for(let i = 0; i &lt; d; i += 1){
+    let t = millis()/1000;
+    let sn = simplexNoise.noise4D(seed+k*i,0,cos(2*PI*t),sin(2*PI*t));
+    let y = sc*sn;
+    // set color for colored version
+
+    let cl = random(colors);
+    cl.setAlpha(120);
+    stroke(0);
+    fill(cl);
+
+    vertex(i,y);
+
+    let ch = random(1);
+    // for some of the variations add small circles
+    if (ch &gt; 0.99){
+      //stroke(0);
+      //fill(cl);
+      //ellipse(i,y,5,5);
+    }
+  }
+  endShape();
+  pop();
+}
+
+
+</code></pre></div></div>
+
+<hr />
+
+<p>This series is a hodgepodge of sketches based on noise and polygons.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

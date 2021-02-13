@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Noise Loops: Points in Rose Curves</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Noise Loops: Points in Rose Curves</h1>
+<p class="meta">12 Feb 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>William Wordsworth:</p>
+</blockquote>
+
+<blockquote>
+  <p>Continuous as the stars that shine<br />
+And twinkle on the milky way,<br />
+They stretched in never-ending line<br />
+Along the margin of a bay:<br />
+Ten thousand saw I at a glance,<br />
+Tossing their heads in sprightly dance..</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/030a.gif" /></p>
+
+<p><img src="/images/030b.gif" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let simplexNoise;
+let numFrames = 300;
+// set frame rate
+let fps = 30;
+// the canvas capturer instance
+let capturer = new CCapture({ format: 'png', framerate: fps });
+let points = [];
+let n = 10000;
+let radius = 200;
+let colors;
+
+function setup(){
+  createCanvas(500,500,WEBGL);
+  background(10);
+
+  // for 4d noise
+  simplexNoise = new OpenSimplexNoise(Date.now());
+
+  // get points on curve to plot
+  for(let i = 0; i&lt;n; i++){
+    points[i] = new PointObj(radius);
+  }
+
+  frameRate(fps);
+  // start the recording
+  capturer.start();
+}
+
+
+function draw(){
+
+  background(10);
+  colors = [color(86, 163, 166),color(72, 69, 56),color(02, 212, 157),
+            color(212, 234, 200),color(192, 216, 224)];
+  if (frameCount &gt;= numFrames){
+    noLoop();
+    capturer.stop();
+    capturer.save();
+    return;
+  }
+  // call render for each fram and capture the frame
+  render();
+
+  capturer.capture(document.getElementById('defaultCanvas0'));
+}
+
+
+// simplexNoise based loops
+function render(){
+  let t = 1.0*frameCount/numFrames;
+  for(let i = 0; i &lt; n; i++){
+    // show will move the point
+    points[i].show(t);
+  }
+
+}
+</code></pre></div></div>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// points inside a circle of radius
+class PointObj{
+  constructor(radius){
+    let rad = (random(1))*radius;
+    let ang = random(2*PI);
+    this.radius = radius;
+
+    // // astroid, set r to 400
+    //this.x = rad*cos(ang)*sin(ang)*sin(ang);
+    //this.y = rad*sin(ang)*cos(ang)*cos(ang);
+
+    // rose
+    // change k to get different number of petals
+    let k = 8;
+    this.x = rad*cos(k*ang)*cos(ang);
+    this.y = rad*cos(k*ang)*sin(ang);
+
+    //
+  }
+
+  show(t){
+    // control location of point as a function of distance from center
+    let intensity = pow(map(dist(this.x,this.y,0,0),0,this.radius,1,0),0.75);
+
+    // change r and d for variations
+    // changing r makes it jumpy
+    // increasing d will change radius more
+    let r = 1.5;
+    let d = 75;
+    let x = this.x;
+    let y = this.y;
+    let xx = x + d*intensity*simplexNoise.noise4D(0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+    let yy = y + d*intensity*simplexNoise.noise4D(100+0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+
+    let cl = color(250);
+    cl.setAlpha(40);
+    stroke(cl);
+    noFill();
+    strokeWeight(1);
+    ellipse(xx,yy,1,1);
+  }
+}
+
+
+</code></pre></div></div>
+<hr />
+
+<p>Some old sketches that rely heavily on tutorials by <a href="https://necessarydisorder.wordpress.com/">Etienne Jacob</a></p>
+
+<p>We take 10000 random points from a rose curve and let these follow a path based on simplex noise ensuring that they loop over.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://en.wikipedia.org/wiki/Rose_(mathematics)">Rose Curves</a></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

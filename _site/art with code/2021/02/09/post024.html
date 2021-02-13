@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Lines and Circles In A Recursive Grid</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Lines and Circles In A Recursive Grid</h1>
+<p class="meta">09 Feb 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Bruce Lee:</p>
+</blockquote>
+
+<blockquote>
+  <p>Be Water, My Friend.<br />
+Empty your mind.<br />
+Be formless, shapeless, like water.<br />
+You put water into a cup, it becomes the cup.<br />
+You put water into a bottle, it becomes the bottle.<br />
+You put it into a teapot, it becomes the teapot.<br />
+Now water can flow or it can crash.<br />
+Be water, my friend.</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/024a.png" /></p>
+
+<p><img src="/images/024b.png" /></p>
+
+<p><img src="/images/024c.png" /></p>
+
+<p><img src="/images/024d.png" /></p>
+
+<p><img src="/images/024e.png" /></p>
+
+<p><img src="/images/024f.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// code snippet referenced: https://editor.p5js.org/runemadsen/sketches/rkbBsG_1z
+
+// smallest permitted width or height
+//change this for variations
+let s = 200;
+// simplex noise
+let simplexNoise;
+let colors = [];
+let seed = 0;
+let margin = 20;
+
+function setup() {
+  createCanvas(600, 600);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  // palette
+  colors =[color( 91, 192, 235),color(253, 231, 76),color(155, 197, 61),
+          color( 195, 66, 63)];
+}
+
+function draw(){
+  noLoop();
+  // call recursive function to divide the canvas
+  drawRect(margin,margin, width - 2*margin, height - 2*margin);
+}
+
+// recursive division of rectangle
+function drawRect(x, y, w, h)
+{
+
+  // call the funciton to render sketch for this particular cell
+  render(x,y,w,h);
+
+  // then figure out if we need to split this cell further
+  let splitWidth = random(1) &gt; 0.5;
+  let splitWhere = random(0.3, 0.8);
+
+  // if we're splitting the width
+  if(splitWidth &amp;&amp; w &gt; s)
+  {
+    drawRect(x, y, w * splitWhere, h);
+    drawRect(x + (w * splitWhere), y, w * (1 - splitWhere), h);
+
+  }
+  // else if we're splitting the height
+  else if(h &gt; s)
+  {
+    drawRect(x, y, w, h * splitWhere);
+    drawRect(x, y + (h * splitWhere), w, h * (1 - splitWhere));
+  }
+}
+
+// final sketch to fill each rectangle with noisy lines
+function render(x,y,w,h){
+
+  push();
+  translate(x,y);
+
+  // clear previous drawings
+  fill(33, 26, 30);
+  stroke(0);
+  strokeWeight(20);
+  rect(0,0, w, h);
+
+  // draw new stuff
+  noFill();
+  strokeWeight(1);
+
+  // if width greater, fill horizontally
+  if(w &gt;= h){
+    // spacing between lines
+    let sh = h/20;
+    // extent of deformation
+    let f = 5;
+    for(let y = 0; y &lt; h; y+= sh){
+      stroke(255,220);
+      beginShape();
+      for(let x = 0; x &lt; w; x++){
+        // change .1 to other values for variations
+        let z = f*simplexNoise.noise2D(.05*x,.05*y);
+        vertex(x, y+z);
+      }
+      endShape();
+    }
+  }
+  // if height greater, fill vertically
+  else{
+    // spacing between lines
+    let sw = w/20;
+    // extent of deformation
+    let f = 5;
+    for(let x = 0; x &lt; w; x+=sw){
+      stroke(255,220);
+      beginShape();
+      for(let y = 0; y &lt; h; y++){
+        // change .1 to other values for variations
+        let z = f*simplexNoise.noise2D(.05*y,.05*x);
+        vertex(x+z, y);
+      }
+      endShape();
+    }
+  }
+
+  // draw an ellipse at the center of each cell with background color
+  // this will clear out the lines drawn in the cell
+  fill(33, 26, 30);
+  noStroke();
+  let rd = min(w,h);
+  ellipse(0.5*w+2,0.5*h+2,0.92*rd);
+  noFill();
+
+  // now fill this ellipse with a circle of noisy lines
+  push();
+  translate(0.5*w,0.5*h);
+  rotate(random([PI/4,-PI/4,PI/2,0]));
+  polygon(0,0,0.4*rd,0,2*PI);
+  pop();
+  pop();
+}
+
+// simple function to draw polygon
+// here the polygon is nearly a circle filled with noisy lines
+function polygon(x, y, radius, start, end) {
+  // colors,alpha etc
+  let cl = random(colors);
+  cl.setAlpha(230);
+  stroke(cl);
+  strokeWeight(1);
+
+  push();
+  translate(x,y);
+  beginShape();
+  // change PI/60 according to size of cell
+  // this increment decides spacing between lines
+  for (let a = start; a &lt; end; a+= PI/60) {
+    // get vertex of circle
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+
+    let r = 20;
+    // change k to change noise
+    let k = 0.01;
+
+    // changing height (alog with k value) decides extent of deformation of lines
+    let height = 10;
+    // drawing the lines
+    beginShape();
+    for(let x = sx; x &lt; -sx; x++){
+      let sn = simplexNoise.noise2D(seed+k*x,seed+k*sy);
+      let y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+  }
+  endShape();
+  pop();
+}
+
+</code></pre></div></div>
+
+<hr />
+
+<p>This series renders noise bases lines and circles in a recursive grid.</p>
+
+<p>The recursive grid follows the same method as followed in <a href="https://amsykal.github.io/art%20with%20code/2021/01/10/post012.html">the previous series</a>.</p>
+
+<p>The code follows these simple steps.</p>
+
+<ol>
+  <li>drawRect() divides the whole canvas into smaller rectangles recursively.</li>
+  <li>For each rectangle simplex noise lines are drawn horizontally or vertically depending on whether the width is greater or height is greater</li>
+  <li>A circle is drawn in the centre of each rectangle and then this is filled with noise based lines.</li>
+</ol>
+
+<p>Comments further detail the implementation.</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

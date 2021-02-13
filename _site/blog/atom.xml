@@ -4,13 +4,1368 @@
 	<title>Blog</title>
 	<link href="http://amsykal.github.io/blog/atom.xml" rel="self"/>
 	<link href="http://amsykal.github.io/blog"/>
-	<updated>2021-02-09T16:27:40+05:30</updated>
+	<updated>2021-02-13T08:08:28+05:30</updated>
 	<id>http://amsykal.github.io/blog</id>
 	<author>
 		<name>Lakshmi</name>
 		<email>a.lakshmi.s@gmail.com</email>
 	</author>
 
+	
+		<entry>
+			<title>Art with Code: Noise Loops: Points in Rose Curves</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/12/post030.html"/>
+			<updated>2021-02-12T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/12/post030</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;William Wordsworth:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Continuous as the stars that shine&lt;br /&gt;
+And twinkle on the milky way,&lt;br /&gt;
+They stretched in never-ending line&lt;br /&gt;
+Along the margin of a bay:&lt;br /&gt;
+Ten thousand saw I at a glance,&lt;br /&gt;
+Tossing their heads in sprightly dance..&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/030a.gif&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/030b.gif&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let simplexNoise;
+let numFrames = 300;
+// set frame rate
+let fps = 30;
+// the canvas capturer instance
+let capturer = new CCapture({ format: 'png', framerate: fps });
+let points = [];
+let n = 10000;
+let radius = 200;
+let colors;
+
+function setup(){
+  createCanvas(500,500,WEBGL);
+  background(10);
+
+  // for 4d noise
+  simplexNoise = new OpenSimplexNoise(Date.now());
+
+  // get points on curve to plot
+  for(let i = 0; i&amp;lt;n; i++){
+    points[i] = new PointObj(radius);
+  }
+
+  frameRate(fps);
+  // start the recording
+  capturer.start();
+}
+
+
+function draw(){
+
+  background(10);
+  colors = [color(86, 163, 166),color(72, 69, 56),color(02, 212, 157),
+            color(212, 234, 200),color(192, 216, 224)];
+  if (frameCount &amp;gt;= numFrames){
+    noLoop();
+    capturer.stop();
+    capturer.save();
+    return;
+  }
+  // call render for each fram and capture the frame
+  render();
+
+  capturer.capture(document.getElementById('defaultCanvas0'));
+}
+
+
+// simplexNoise based loops
+function render(){
+  let t = 1.0*frameCount/numFrames;
+  for(let i = 0; i &amp;lt; n; i++){
+    // show will move the point
+    points[i].show(t);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// points inside a circle of radius
+class PointObj{
+  constructor(radius){
+    let rad = (random(1))*radius;
+    let ang = random(2*PI);
+    this.radius = radius;
+
+    // // astroid, set r to 400
+    //this.x = rad*cos(ang)*sin(ang)*sin(ang);
+    //this.y = rad*sin(ang)*cos(ang)*cos(ang);
+
+    // rose
+    // change k to get different number of petals
+    let k = 8;
+    this.x = rad*cos(k*ang)*cos(ang);
+    this.y = rad*cos(k*ang)*sin(ang);
+
+    //
+  }
+
+  show(t){
+    // control location of point as a function of distance from center
+    let intensity = pow(map(dist(this.x,this.y,0,0),0,this.radius,1,0),0.75);
+
+    // change r and d for variations
+    // changing r makes it jumpy
+    // increasing d will change radius more
+    let r = 1.5;
+    let d = 75;
+    let x = this.x;
+    let y = this.y;
+    let xx = x + d*intensity*simplexNoise.noise4D(0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+    let yy = y + d*intensity*simplexNoise.noise4D(100+0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+
+    let cl = color(250);
+    cl.setAlpha(40);
+    stroke(cl);
+    noFill();
+    strokeWeight(1);
+    ellipse(xx,yy,1,1);
+  }
+}
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;Some old sketches that rely heavily on tutorials by &lt;a href=&quot;https://necessarydisorder.wordpress.com/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;We take 10000 random points from a rose curve and let these follow a path based on simplex noise ensuring that they loop over.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Rose_(mathematics)&quot;&gt;Rose Curves&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Noisy Lines In A Circle</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/12/post029.html"/>
+			<updated>2021-02-12T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/12/post029</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;J.R.R. Tolkien, The Fellowship of the Ring:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;All that is gold does not glitter,&lt;br /&gt;
+Not all those who wander are lost;&lt;br /&gt;
+The old that is strong does not wither,&lt;br /&gt;
+Deep roots are not reached by the frost.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;From the ashes a fire shall be woken,&lt;br /&gt;
+A light from the shadows shall spring;&lt;br /&gt;
+Renewed shall be blade that was broken,&lt;br /&gt;
+The crownless again shall be king.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/029a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/029b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/029c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/029d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/029e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let simplexNoise,seed;
+let colors = [];
+
+
+function setup(){
+  createCanvas(600,600);
+  background(255, 235, 196);
+  background(20, 20, 20);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  seed = 1000;
+  colors = [color(238, 198, 67),
+            color(238, 240, 242)];
+}
+
+function draw(){
+  noLoop();
+  push();
+  translate(width/2,height/2);
+  polygon(0,0,250,PI/2,PI+PI/2);
+  pop();
+}
+
+// angle PI/1000, NOISE 0.1, what we vary - height - from 1 to 40
+// simple function to draw polygon of any number of sides
+function polygon(x, y, radius, start, end) {
+  push();
+  translate(x,y);
+  // get vertices of circle - we get vertices from -PI/2 to +PI/2
+  // if the vertex is x,y we draw a noisy line from x,y to -x,y
+  beginShape();
+  for (let a = start; a &amp;lt; end; a+= PI/1000) {
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    let r = 1;
+    let t = millis()/1000;
+    // change height for variations
+    let height = 1;
+    // change color,alpha for variations
+    let cl = random(colors);
+    //let cl = colors[1];
+    cl.setAlpha(150);
+    stroke(cl);
+    strokeWeight(1);
+    noFill();
+    // drawing the noisy lines
+    beginShape();
+    for(let x = sx; x &amp;lt; -sx; x++){
+      let sn = simplexNoise.noise4D(seed+0.1*x,seed+0.1*sy,r*cos(2*PI*t),r*sin(2*PI*t));
+      let y = sy + height*sn;
+      vertex(x,y);
+      // second vertex with a different seed
+      sn = simplexNoise.noise4D(2*seed+0.1*x,2*seed+0.1*sy,r*cos(2*PI*t),r*sin(2*PI*t));
+      y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+  }
+  endShape();
+  pop();
+}
+
+
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series uses same ideas as in many of the previous sketches.&lt;/p&gt;
+
+&lt;p&gt;Simplex noise based lines are drawn horizontally with end points located on a circle.Using different levels of noise gives interesting patterns.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Designs</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/10/post028.html"/>
+			<updated>2021-02-10T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/10/post028</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Albert Einstein:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;‘Life is a great tapestry. The individual is only an insignificant thread in an immense and miraculous pattern.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/028a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/028b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/028c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/028d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/028e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/028f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/028h.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/028i.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/028j.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let s;
+let colors = [];
+let simplexNoise;
+let seed,k;
+
+function setup(){
+  createCanvas(600,600);
+  background(150);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+  seed = 10;
+}
+
+function draw(){
+  noLoop();
+  strokeWeight(1);
+  noFill();
+  // initialize noise level
+  k = 0.05;
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+  makegrid();
+}
+
+function makegrid(){
+  // change cell size as needed
+  s = 600;
+  let rows = height/s;
+  let cols = width/s;
+  for(let i = 0; i &amp;lt;= rows; i++){
+    for(let j = 0; j &amp;lt;= cols; j++){
+      let x = j*s - 0.5*s;
+      let y = i*s - 0.5*s;
+      push();
+      translate(x,y);
+      render();
+      pop();
+    }
+  }
+}
+
+function render(){
+  // horizontal
+  let inc = PI/10;
+  push();
+  for(let r = 100 ; r &amp;lt; 0.45*s; r+= 4){
+    for(let a = 0; a &amp;lt; PI; a+=inc){
+        let x1 = r*cos(a+PI/200);
+        let y1 = r*sin(a+PI/200);
+        let x2 = r*cos(a+inc-PI/200);
+        let y2 = r*sin(a+inc-PI/200);
+        // bottom half
+        nline(x1,y1,x2,y2,k);
+        // top half
+        nline(x1,-y1,x2,-y2,k);
+    }
+  }
+  pop();
+
+  // vertical - some variations uncomment this bit
+  for(let a = -PI/2; a &amp;lt; PI/2; a+=PI/75){
+        stroke(0,100);
+        let x1 = 150*cos(a);
+        let y1 = 150*sin(a);
+        let x2 = 0.45*s*cos(a);
+        let y2 = 0.45*s*sin(a);
+        nline(x2,y2,x1,y1,0.1);
+        nline(-x1,-y1,-x2,-y2,0.1);
+  }
+}
+
+
+// draw noisy line between 2 coordinates
+// x1,y1 and x2,y2
+// k specifies how noisy
+function nline(x1,y1,x2,y2,k){
+
+  // change seed for every render
+  //seed += 1000;
+  // compute distance between 2 lines
+  let d = dist(x1,y1,x2,y2);
+  // how much do you want to scale the noise ?
+  let sc = 10;
+  // angle by which to rotate line
+  let ang = atan((y2-y1)/(x2-x1));
+  // readjust coordinates etc to get proper alignment of line
+  push();
+  translate(x2,y2);
+  rotate(ang);
+  beginShape();
+
+  for(let i = 0; i &amp;lt; d; i += 1){
+    let t = millis()/1000;
+    let sn = simplexNoise.noise4D(seed+k*i,0,cos(2*PI*t),sin(2*PI*t));
+    let y = sc*sn;
+    // set color for colored version
+
+    let cl = random(colors);
+    cl.setAlpha(120);
+    stroke(0);
+    fill(cl);
+
+    vertex(i,y);
+
+    let ch = random(1);
+    // for some of the variations add small circles
+    if (ch &amp;gt; 0.99){
+      //stroke(0);
+      //fill(cl);
+      //ellipse(i,y,5,5);
+    }
+  }
+  endShape();
+  pop();
+}
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series is a hodgepodge of sketches based on noise and polygons.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Moiré Pattern</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/10/post027.html"/>
+			<updated>2021-02-10T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/10/post027</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Betsy Cornwell, Mechanica:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;‘Everything was a broken line for me in those days. I was slipped into the empty spaces between words.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/027a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/027b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/027c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/027d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/027e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/027f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/027h.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/027i.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/027j.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/027k.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/027l.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let cl,simplexNoise;
+let s,seed;
+let k;
+
+function setup(){
+  createCanvas(600,600);
+  background(26, 42, 49);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  seed = 1000;
+}
+
+function draw(){
+  noLoop();
+  makeGrid();
+}
+
+function makeGrid(){
+  // size of cell - change for variations
+  s = 60;
+  // how noisy ? change for variations
+  k = 0.001;
+  let rows = height/s;
+  let cols = width/s;
+  for(let i = 0; i &amp;lt; cols; i++){
+    for(let j = 0; j &amp;lt; rows; j++){
+      let x = i*s+s/2;
+      let y = j*s+s/2;
+
+      push();
+      translate(x,y);
+      // rotate each circle in the cell based on noise
+      // so things are not too random and you get a nice pattern
+      let ang = 2*PI*noise(0.05*x,0.05*y);
+      rotate(ang);
+
+      // set up colors etc for first draw
+      let cl = random(colors);
+      stroke(255, 255, 234);
+      strokeWeight(2);
+      // render with white strokes
+      render();
+
+      // get crossed lines with background colors
+      // this gives us lines with breaks
+      rotate(ang + PI/4);
+      stroke(26, 42, 49,250);
+      render();
+
+      pop();
+    }
+  }
+}
+
+function render(){
+  noFill();
+  push();
+  translate(-s/2,-s/2);
+  polygon(s/2,s/2, 0.4*s, 0.5*PI,1.5*PI) ;
+  pop();
+}
+
+// simple function to draw polygon of any number of sides
+function polygon(x, y, radius, start, end) {
+  push();
+  translate(x,y);
+  beginShape();
+  for (let a = start; a &amp;lt; end; a+= PI/20) {
+    // vertices of circle
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    let r = 1;
+    let t = millis()/1000;
+    let height = 10;
+    // drawing the lines
+    // k and height controls appearance of the lines
+    beginShape();
+    for(let x = sx; x &amp;lt; -sx; x++){
+      let sn = simplexNoise.noise4D(seed+k*x,seed+k*sy,r*cos(2*PI*t),r*sin(2*PI*t));
+      let y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+  }
+  endShape();
+  pop();
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series presents an attempt at Moire Patterns.&lt;/p&gt;
+
+&lt;p&gt;From &lt;a href=&quot;https://mathworld.wolfram.com/MoirePattern.html&quot;&gt;Wolfram Mathworld&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;‘A Moiré pattern is an interference pattern produced by overlaying similar but slightly offset templates. A simple example is obtained by taking two identical ruled transparent sheets of plastic, superposing them, and rotating one about its center as the other is held fixed. ‘&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;makegrid() divides the canvas into smaller rectangles(cells).&lt;/li&gt;
+  &lt;li&gt;Each cell calls render() twice&lt;/li&gt;
+  &lt;li&gt;render() draws noise based lines with end points located on a circle. The inclination of the lines changes from one cell to next and the angle by which it shifts is also controlled by noise.&lt;/li&gt;
+  &lt;li&gt;The second call to render() does the same except in background colour and rotated by a certain angle wrt the first render()&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Moir%C3%A9_pattern&quot;&gt;Moiré Pattern&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Heart Curve</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/10/post026.html"/>
+			<updated>2021-02-10T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/10/post026</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Louis de Bernières:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;‘The human heart likes a little disorder in its geometry.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/026a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/026b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/026c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/026d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/026e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/026f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/026h.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let s,uang,n;
+let simplexNoise;
+
+function setup(){
+  createCanvas(600,600);
+  //background(179, 162, 188);
+  background(0);
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  colors = [color(194, 0, 251),color( 236, 8, 104),color(252, 47, 0),
+            color(255, 188, 10),color(255,255,255)];
+}
+
+function draw(){
+  noLoop();
+  // set angle till which heart curve is to be plotted
+  uang = 0;
+  render();
+}
+
+function render(){
+
+  s = 600
+  push();
+  translate(s/2,s/2);
+  rotate(PI);
+  // scaling - change this - too high and the shape is off....
+  let sc = 1;
+  // increment for each cell
+  uang += (2*PI)/n;
+  // concentric hearts
+  // using vertex for some variations and ellipse for others.
+
+  for(let rad = 0.5; rad &amp;lt; 16; rad += 0.25){
+    let cl = random(colors);
+    cl.setAlpha(20);
+    stroke(cl);
+    fill(cl);
+    // step through the angles
+    beginShape();
+    for(let ang = 0; ang &amp;lt;= 2*PI; ang += PI/500){
+      let x = 16*rad*pow(sin(ang),3);
+      let y = rad*(13*cos(ang)-5*cos(2*ang)-2*cos(3*ang)-cos(4*ang));
+      let t = millis()/1000;
+      // change .1 to .001,.01, etc for variations
+      let sn = simplexNoise.noise4D(.1*x,0.1*y,cos(2*PI*t),sin(2*PI*t));
+      let rnew = sc*sn;
+      // noise based new shifted points
+      let xn = 16*rnew*pow(sin(ang),3);
+      let yn = rnew*(13*cos(ang)-5*cos(2*ang)-2*cos(3*ang)-cos(4*ang));
+      // using vertex for some variations and ellipse for others.
+      //vertex(x+xn,y+yn);
+      ellipse(x+xn,y+yn,2,2);
+    }
+    endShape();
+  }
+
+  // repeat for inner part - optional , used in some variations
+  for(let rad = 0; rad &amp;lt; 10; rad += 0.1){
+    let cl = random(colors);
+    cl.setAlpha(1);
+    stroke(cl);
+    fill(255,2);
+    // step through the angles
+    beginShape();
+    for(let ang = 0; ang &amp;lt;= 2*PI; ang += PI/500){
+      let x = 16*rad*pow(sin(ang),3);
+      let y = rad*(13*cos(ang)-5*cos(2*ang)-2*cos(3*ang)-cos(4*ang));
+      let t = millis()/1000;
+      // change .1 to .001,.01, etc for variations
+      let sn = simplexNoise.noise4D(.01*x,0.01*y,cos(2*PI*t),sin(2*PI*t));
+      let rnew = sc*sn;
+      // noise based new shifted points
+      let xn = 16*rnew*pow(sin(ang),3);
+      let yn = rnew*(13*cos(ang)-5*cos(2*ang)-2*cos(3*ang)-cos(4*ang));
+      // using vertex for some variations and ellipse for others.
+      vertex(x+xn,y+yn);
+      //ellipse(x+xn,y+yn,2,2);
+    }
+    endShape();
+  }
+  pop();
+}
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series renders the heart curve with some simplex noise introduced in the curve.&lt;/p&gt;
+
+&lt;p&gt;There are a number of different equations that result in heart shaped curves.The one used in this sketch takes on the following parametric form.&lt;/p&gt;
+
+&lt;p&gt;$ x = 16\times\sin^3t$&lt;/p&gt;
+
+&lt;p&gt;$ y = 13\times\cos(t)-5\times\cos(2t)-2\times\cos(3t)-\cos(4t)$&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mathworld.wolfram.com/HeartCurve.html&quot;&gt;Heart Curves&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Noisy Lines In A Grid</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/10/post025.html"/>
+			<updated>2021-02-10T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/10/post025</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Karl Kraus:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;‘Science is spectral analysis.Art is light synthesis.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/025a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/025b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/025d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/025e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/025f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/025c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let s;
+let colors = [];
+let simplexNoise;
+let seed;
+
+function setup(){
+  createCanvas(600,600);
+  background(0);
+  // palette
+  colors = [color(243, 198, 119),color(123, 30, 122),
+            color(179, 63, 98),color(249, 86, 79)];
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  // size of each cell in the grid - change for variaitons
+  s = 150;
+  // seed to be incremented for every cell, to get a different pattern
+  seed = 0;
+}
+
+function draw(){
+  noLoop();
+  makegrid();
+}
+
+// make cells along rows and columns
+function makegrid(){
+  let rows = height/s;
+  let cols = width/s;
+
+  // make a grid of cells
+  for(let i = -1; i &amp;lt; rows+1; i++){
+    for(let j = -1; j &amp;lt; cols+1; j++){
+      let x = j*s;
+      let y = i*s;
+      push();
+      translate(x,y);
+      // in each cell draw horizontal noisy lines
+      // changing the gap between the lines, the noise input etc
+      // gives variations
+      render();
+      pop();
+    }
+  }
+}
+
+// draw in each cell
+function render(){
+  // gap between lines in each cell, change for variations
+  let g = 1;
+  // margin to be left for each cell on all sides
+  let m = 20;
+
+  strokeWeight(1);
+  noFill();
+  // change seed for every cell to get different patterns
+  seed += 1000;
+  let rl = random(colors);
+  rl.setAlpha(30);
+  stroke(rl);
+
+  // drawing the lines
+  for(let i = m; i &amp;lt;= 2*s-m; i+=g){
+    let t = millis()/1000;
+    // vertical lines
+    beginShape();
+    for(let x = m; x &amp;lt;= 2*s-m; x+=g){
+      // try changing .01 to 0.001,0.1 etc
+      let sc = 40;
+      let y = i+sc*simplexNoise.noise4D(seed+.01*x,seed+0.01*i,cos(2*PI*t),sin(2*PI*t));
+      vertex(y,x);
+
+    }
+    endShape();
+
+    // horizontal lines
+    beginShape();
+    for(let x = m; x &amp;lt;= 2*s-m; x+=g){
+      // try changing .01 to 0.001,0.1 etc
+      let sc = 40;
+      let y = i+sc*simplexNoise.noise4D(seed+.01*x,seed+0.01*i,cos(2*PI*t),sin(2*PI*t));
+      vertex(x,y);
+
+    }
+    endShape();
+  }
+
+  // draw a rectangle in center of every cell
+  stroke(255,100);
+  fill(0,50);
+  rectMode(CENTER);
+  for(let k = 0; k &amp;lt; s/5; k+= 3){
+    rect(s/2,s/2,k,k);
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series renders noise bases lines in a grid.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;makegrid() divides the canvas into smaller cells&lt;/li&gt;
+  &lt;li&gt;from each cell, we call render()&lt;/li&gt;
+  &lt;li&gt;render() draws simplex noise based lines both vertically and horizontally.&lt;/li&gt;
+  &lt;li&gt;render() follows by drawing nested rectangles in the centre of the cell.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The interaction of horizontal and vertical lines creates interesting effects. Variations are obtained by changing noise levels.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Lines and Circles In A Recursive Grid</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/09/post024.html"/>
+			<updated>2021-02-09T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/09/post024</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Bruce Lee:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Be Water, My Friend.&lt;br /&gt;
+Empty your mind.&lt;br /&gt;
+Be formless, shapeless, like water.&lt;br /&gt;
+You put water into a cup, it becomes the cup.&lt;br /&gt;
+You put water into a bottle, it becomes the bottle.&lt;br /&gt;
+You put it into a teapot, it becomes the teapot.&lt;br /&gt;
+Now water can flow or it can crash.&lt;br /&gt;
+Be water, my friend.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/024a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/024b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/024c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/024d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/024e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/024f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// code snippet referenced: https://editor.p5js.org/runemadsen/sketches/rkbBsG_1z
+
+// smallest permitted width or height
+//change this for variations
+let s = 200;
+// simplex noise
+let simplexNoise;
+let colors = [];
+let seed = 0;
+let margin = 20;
+
+function setup() {
+  createCanvas(600, 600);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  // palette
+  colors =[color( 91, 192, 235),color(253, 231, 76),color(155, 197, 61),
+          color( 195, 66, 63)];
+}
+
+function draw(){
+  noLoop();
+  // call recursive function to divide the canvas
+  drawRect(margin,margin, width - 2*margin, height - 2*margin);
+}
+
+// recursive division of rectangle
+function drawRect(x, y, w, h)
+{
+
+  // call the funciton to render sketch for this particular cell
+  render(x,y,w,h);
+
+  // then figure out if we need to split this cell further
+  let splitWidth = random(1) &amp;gt; 0.5;
+  let splitWhere = random(0.3, 0.8);
+
+  // if we're splitting the width
+  if(splitWidth &amp;amp;&amp;amp; w &amp;gt; s)
+  {
+    drawRect(x, y, w * splitWhere, h);
+    drawRect(x + (w * splitWhere), y, w * (1 - splitWhere), h);
+
+  }
+  // else if we're splitting the height
+  else if(h &amp;gt; s)
+  {
+    drawRect(x, y, w, h * splitWhere);
+    drawRect(x, y + (h * splitWhere), w, h * (1 - splitWhere));
+  }
+}
+
+// final sketch to fill each rectangle with noisy lines
+function render(x,y,w,h){
+
+  push();
+  translate(x,y);
+
+  // clear previous drawings
+  fill(33, 26, 30);
+  stroke(0);
+  strokeWeight(20);
+  rect(0,0, w, h);
+
+  // draw new stuff
+  noFill();
+  strokeWeight(1);
+
+  // if width greater, fill horizontally
+  if(w &amp;gt;= h){
+    // spacing between lines
+    let sh = h/20;
+    // extent of deformation
+    let f = 5;
+    for(let y = 0; y &amp;lt; h; y+= sh){
+      stroke(255,220);
+      beginShape();
+      for(let x = 0; x &amp;lt; w; x++){
+        // change .1 to other values for variations
+        let z = f*simplexNoise.noise2D(.05*x,.05*y);
+        vertex(x, y+z);
+      }
+      endShape();
+    }
+  }
+  // if height greater, fill vertically
+  else{
+    // spacing between lines
+    let sw = w/20;
+    // extent of deformation
+    let f = 5;
+    for(let x = 0; x &amp;lt; w; x+=sw){
+      stroke(255,220);
+      beginShape();
+      for(let y = 0; y &amp;lt; h; y++){
+        // change .1 to other values for variations
+        let z = f*simplexNoise.noise2D(.05*y,.05*x);
+        vertex(x+z, y);
+      }
+      endShape();
+    }
+  }
+
+  // draw an ellipse at the center of each cell with background color
+  // this will clear out the lines drawn in the cell
+  fill(33, 26, 30);
+  noStroke();
+  let rd = min(w,h);
+  ellipse(0.5*w+2,0.5*h+2,0.92*rd);
+  noFill();
+
+  // now fill this ellipse with a circle of noisy lines
+  push();
+  translate(0.5*w,0.5*h);
+  rotate(random([PI/4,-PI/4,PI/2,0]));
+  polygon(0,0,0.4*rd,0,2*PI);
+  pop();
+  pop();
+}
+
+// simple function to draw polygon
+// here the polygon is nearly a circle filled with noisy lines
+function polygon(x, y, radius, start, end) {
+  // colors,alpha etc
+  let cl = random(colors);
+  cl.setAlpha(230);
+  stroke(cl);
+  strokeWeight(1);
+
+  push();
+  translate(x,y);
+  beginShape();
+  // change PI/60 according to size of cell
+  // this increment decides spacing between lines
+  for (let a = start; a &amp;lt; end; a+= PI/60) {
+    // get vertex of circle
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+
+    let r = 20;
+    // change k to change noise
+    let k = 0.01;
+
+    // changing height (alog with k value) decides extent of deformation of lines
+    let height = 10;
+    // drawing the lines
+    beginShape();
+    for(let x = sx; x &amp;lt; -sx; x++){
+      let sn = simplexNoise.noise2D(seed+k*x,seed+k*sy);
+      let y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+  }
+  endShape();
+  pop();
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series renders noise bases lines and circles in a recursive grid.&lt;/p&gt;
+
+&lt;p&gt;The recursive grid follows the same method as followed in &lt;a href=&quot;https://amsykal.github.io/art%20with%20code/2021/01/10/post012.html&quot;&gt;the previous series&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The code follows these simple steps.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;drawRect() divides the whole canvas into smaller rectangles recursively.&lt;/li&gt;
+  &lt;li&gt;For each rectangle simplex noise lines are drawn horizontally or vertically depending on whether the width is greater or height is greater&lt;/li&gt;
+  &lt;li&gt;A circle is drawn in the centre of each rectangle and then this is filled with noise based lines.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Comments further detail the implementation.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Mesh</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/09/post023.html"/>
+			<updated>2021-02-09T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/09/post023</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Richard Feynman:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;‘Nature uses only the longest threads to weave her patterns, so each small piece of her fabric reveals the organization of the entire tapestry.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/023a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/023b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/023c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/023d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/023e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/023f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/023g.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let simplexNoise;
+let colors = [];
+// cell size
+// change size for variations
+let s = 3;
+
+// array to store coordinates of points
+let points = [];
+
+function setup(){
+  createCanvas(600,600);
+  background(0);
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+
+  // palette
+  colors = [color(46, 134, 171),color( 162, 59, 114),
+            color(241, 143, 1),color(199, 62, 29),color(59, 31, 43)];
+
+}
+
+function draw(){
+  noLoop();
+  background(255);
+  push();
+  // draw the mesh
+  makeGrid();
+  render();
+  pop();
+}
+
+// function to store the points of each cell in the mesh.
+function makeGrid(){
+  points = [];
+  let r = 1.5;
+  push();
+  let rows = height/s;
+  let cols = width/s;
+  for(let i = 0; i &amp;lt;= rows+20; i++){
+    points[i] = [];
+    for(let j = 0; j &amp;lt;= cols+20; j++){
+      points[i][j] = [];
+      //we start much to left of margin
+      // this is so that when we have distorted each rectangle
+      // the sketch stretches across the whole width and height
+      // without leaving blank areas along margins
+      // also notice we use rows and cols + 15 to go way beyond the ends.
+      let x = j*s-5*s;
+      let y = i*s-5*s;
+
+      // get offset for x and y based on 4d simplex noise
+      // 20*s looks nice with s = 5
+      // s = 75, 1*s, 2*s
+      // s = 50 , 2*s
+      // s = 30, 4*s and so on....
+      let xx = (50*s)*simplexNoise.noise2D(0.01*x,0.01*y);
+      let yy = (50*s)*simplexNoise.noise2D(1000+0.01*x,0.01*y);
+      // new corner points
+      points[i][j] = [x+xx,y+yy];
+    }
+  }
+  pop();
+}
+
+// function to extract the points of each cell and draw it
+function render(){
+  stroke(255);
+  strokeWeight(1);
+  noFill();
+  // go over the points and stitch them together
+  // to form the rectangles
+  for(let i = 0; i &amp;lt; points.length-1; i++){
+    for(let j = 0; j &amp;lt; points.length-1; j++){
+      // get the points of the rectangle (modified)
+      let rpoints = [];
+      rpoints[0] = [points[i][j][0],points[i][j][1]];
+      rpoints[1] = [points[i+1][j][0],points[i+1][j][1]];
+      rpoints[2] = [points[i+1][j+1][0],points[i+1][j+1][1]];
+      rpoints[3] = [points[i][j+1][0],points[i][j+1][1]];
+      let r = 1.5;
+      // draw the rectangle with new points
+      for(let p = 0; p &amp;lt; 50; p +=1){
+        let cl = random(colors);
+        cl.setAlpha(55);
+        fill(cl);
+        stroke(0,20);
+        beginShape();
+        for (let k = 0; k &amp;lt; rpoints.length; k++){
+          let x = rpoints[k][0];
+          let y = rpoints[k][1];
+          vertex(x-p,y-p);
+        }
+        endShape(CLOSE);
+      }
+    }
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;This series uses simplex noise to ‘weave’ a coloured mesh.We use noise to give a 3 dimensional look.&lt;/p&gt;
+
+&lt;p&gt;The code follows these simple steps.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;makegrid() divides the whole canvas into small rectangles.&lt;/li&gt;
+  &lt;li&gt;Choose a small size for the rectangle.&lt;/li&gt;
+  &lt;li&gt;Get the corners of each rectangle.&lt;/li&gt;
+  &lt;li&gt;Displace the points using simplex noise.&lt;/li&gt;
+  &lt;li&gt;Store the displaced points in a 2d array&lt;/li&gt;
+  &lt;li&gt;Use render() to draw the rectangles using these displaced points.&lt;/li&gt;
+  &lt;li&gt;The result is a 3d looking mesh.&lt;/li&gt;
+  &lt;li&gt;For variations change the size of rectangle ,noise levels, alpha values for colors.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/joshforisha/open-simplex-noise-js&quot;&gt;Open Simplex Noise Package&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf&quot;&gt;Simplex Noise Demystified&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Lv9gyZZJPE0&quot;&gt;What is OpenSimplex Noise? - Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mzucker.github.io/html/perlin-noise-math-faq.html&quot;&gt;Perlin Noise&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/&quot;&gt;Etienne Jacob&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Art with Code: Noisy Arcs In A Grid</title>

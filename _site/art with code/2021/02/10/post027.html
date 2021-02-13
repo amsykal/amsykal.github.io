@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Moiré Pattern</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Moiré Pattern</h1>
+<p class="meta">10 Feb 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Betsy Cornwell, Mechanica:</p>
+</blockquote>
+
+<blockquote>
+  <p>‘Everything was a broken line for me in those days. I was slipped into the empty spaces between words.’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/027a.png" /></p>
+
+<p><img src="/images/027b.png" /></p>
+
+<p><img src="/images/027c.png" /></p>
+
+<p><img src="/images/027d.png" /></p>
+
+<p><img src="/images/027e.png" /></p>
+
+<p><img src="/images/027f.png" /></p>
+
+<p><img src="/images/027h.png" /></p>
+
+<p><img src="/images/027i.png" /></p>
+
+<p><img src="/images/027j.png" /></p>
+
+<p><img src="/images/027k.png" /></p>
+
+<p><img src="/images/027l.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let cl,simplexNoise;
+let s,seed;
+let k;
+
+function setup(){
+  createCanvas(600,600);
+  background(26, 42, 49);
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  seed = 1000;
+}
+
+function draw(){
+  noLoop();
+  makeGrid();
+}
+
+function makeGrid(){
+  // size of cell - change for variations
+  s = 60;
+  // how noisy ? change for variations
+  k = 0.001;
+  let rows = height/s;
+  let cols = width/s;
+  for(let i = 0; i &lt; cols; i++){
+    for(let j = 0; j &lt; rows; j++){
+      let x = i*s+s/2;
+      let y = j*s+s/2;
+
+      push();
+      translate(x,y);
+      // rotate each circle in the cell based on noise
+      // so things are not too random and you get a nice pattern
+      let ang = 2*PI*noise(0.05*x,0.05*y);
+      rotate(ang);
+
+      // set up colors etc for first draw
+      let cl = random(colors);
+      stroke(255, 255, 234);
+      strokeWeight(2);
+      // render with white strokes
+      render();
+
+      // get crossed lines with background colors
+      // this gives us lines with breaks
+      rotate(ang + PI/4);
+      stroke(26, 42, 49,250);
+      render();
+
+      pop();
+    }
+  }
+}
+
+function render(){
+  noFill();
+  push();
+  translate(-s/2,-s/2);
+  polygon(s/2,s/2, 0.4*s, 0.5*PI,1.5*PI) ;
+  pop();
+}
+
+// simple function to draw polygon of any number of sides
+function polygon(x, y, radius, start, end) {
+  push();
+  translate(x,y);
+  beginShape();
+  for (let a = start; a &lt; end; a+= PI/20) {
+    // vertices of circle
+    let sx = cos(a) * radius;
+    let sy = sin(a) * radius;
+    let r = 1;
+    let t = millis()/1000;
+    let height = 10;
+    // drawing the lines
+    // k and height controls appearance of the lines
+    beginShape();
+    for(let x = sx; x &lt; -sx; x++){
+      let sn = simplexNoise.noise4D(seed+k*x,seed+k*sy,r*cos(2*PI*t),r*sin(2*PI*t));
+      let y = sy + height*sn;
+      vertex(x,y);
+    }
+    endShape();
+  }
+  endShape();
+  pop();
+}
+
+</code></pre></div></div>
+
+<hr />
+
+<p>This series presents an attempt at Moire Patterns.</p>
+
+<p>From <a href="https://mathworld.wolfram.com/MoirePattern.html">Wolfram Mathworld</a></p>
+
+<p>‘A Moiré pattern is an interference pattern produced by overlaying similar but slightly offset templates. A simple example is obtained by taking two identical ruled transparent sheets of plastic, superposing them, and rotating one about its center as the other is held fixed. ‘</p>
+
+<ol>
+  <li>makegrid() divides the canvas into smaller rectangles(cells).</li>
+  <li>Each cell calls render() twice</li>
+  <li>render() draws noise based lines with end points located on a circle. The inclination of the lines changes from one cell to next and the angle by which it shifts is also controlled by noise.</li>
+  <li>The second call to render() does the same except in background colour and rotated by a certain angle wrt the first render()</li>
+</ol>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://en.wikipedia.org/wiki/Moir%C3%A9_pattern">Moiré Pattern</a></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

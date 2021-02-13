@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Heart Curve</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Heart Curve</h1>
+<p class="meta">10 Feb 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>Louis de Bernières:</p>
+</blockquote>
+
+<blockquote>
+  <p>‘The human heart likes a little disorder in its geometry.’</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/026a.png" /></p>
+
+<p><img src="/images/026b.png" /></p>
+
+<p><img src="/images/026c.png" /></p>
+
+<p><img src="/images/026d.png" /></p>
+
+<p><img src="/images/026e.png" /></p>
+
+<p><img src="/images/026f.png" /></p>
+
+<p><img src="/images/026h.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let s,uang,n;
+let simplexNoise;
+
+function setup(){
+  createCanvas(600,600);
+  //background(179, 162, 188);
+  background(0);
+  // create noise object
+  simplexNoise = new OpenSimplexNoise(Date.now());
+  colors = [color(194, 0, 251),color( 236, 8, 104),color(252, 47, 0),
+            color(255, 188, 10),color(255,255,255)];
+}
+
+function draw(){
+  noLoop();
+  // set angle till which heart curve is to be plotted
+  uang = 0;
+  render();
+}
+
+function render(){
+
+  s = 600
+  push();
+  translate(s/2,s/2);
+  rotate(PI);
+  // scaling - change this - too high and the shape is off....
+  let sc = 1;
+  // increment for each cell
+  uang += (2*PI)/n;
+  // concentric hearts
+  // using vertex for some variations and ellipse for others.
+
+  for(let rad = 0.5; rad &lt; 16; rad += 0.25){
+    let cl = random(colors);
+    cl.setAlpha(20);
+    stroke(cl);
+    fill(cl);
+    // step through the angles
+    beginShape();
+    for(let ang = 0; ang &lt;= 2*PI; ang += PI/500){
+      let x = 16*rad*pow(sin(ang),3);
+      let y = rad*(13*cos(ang)-5*cos(2*ang)-2*cos(3*ang)-cos(4*ang));
+      let t = millis()/1000;
+      // change .1 to .001,.01, etc for variations
+      let sn = simplexNoise.noise4D(.1*x,0.1*y,cos(2*PI*t),sin(2*PI*t));
+      let rnew = sc*sn;
+      // noise based new shifted points
+      let xn = 16*rnew*pow(sin(ang),3);
+      let yn = rnew*(13*cos(ang)-5*cos(2*ang)-2*cos(3*ang)-cos(4*ang));
+      // using vertex for some variations and ellipse for others.
+      //vertex(x+xn,y+yn);
+      ellipse(x+xn,y+yn,2,2);
+    }
+    endShape();
+  }
+
+  // repeat for inner part - optional , used in some variations
+  for(let rad = 0; rad &lt; 10; rad += 0.1){
+    let cl = random(colors);
+    cl.setAlpha(1);
+    stroke(cl);
+    fill(255,2);
+    // step through the angles
+    beginShape();
+    for(let ang = 0; ang &lt;= 2*PI; ang += PI/500){
+      let x = 16*rad*pow(sin(ang),3);
+      let y = rad*(13*cos(ang)-5*cos(2*ang)-2*cos(3*ang)-cos(4*ang));
+      let t = millis()/1000;
+      // change .1 to .001,.01, etc for variations
+      let sn = simplexNoise.noise4D(.01*x,0.01*y,cos(2*PI*t),sin(2*PI*t));
+      let rnew = sc*sn;
+      // noise based new shifted points
+      let xn = 16*rnew*pow(sin(ang),3);
+      let yn = rnew*(13*cos(ang)-5*cos(2*ang)-2*cos(3*ang)-cos(4*ang));
+      // using vertex for some variations and ellipse for others.
+      vertex(x+xn,y+yn);
+      //ellipse(x+xn,y+yn,2,2);
+    }
+    endShape();
+  }
+  pop();
+}
+
+
+</code></pre></div></div>
+
+<hr />
+
+<p>This series renders the heart curve with some simplex noise introduced in the curve.</p>
+
+<p>There are a number of different equations that result in heart shaped curves.The one used in this sketch takes on the following parametric form.</p>
+
+<p>$ x = 16\times\sin^3t$</p>
+
+<p>$ y = 13\times\cos(t)-5\times\cos(2t)-2\times\cos(3t)-\cos(4t)$</p>
+
+<hr />
+
+<p><strong>REFERENCE</strong></p>
+
+<p><a href="https://mathworld.wolfram.com/HeartCurve.html">Heart Curves</a></p>
+
+<p><a href="https://github.com/joshforisha/open-simplex-noise-js">Open Simplex Noise Package</a></p>
+
+<p><a href="http://weber.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">Simplex Noise Demystified</a></p>
+
+<p><a href="https://www.youtube.com/watch?v=Lv9gyZZJPE0">What is OpenSimplex Noise? - Coding Train</a></p>
+
+<p><a href="https://mzucker.github.io/html/perlin-noise-math-faq.html">Perlin Noise</a></p>
+
+<p><a href="https://necessarydisorder.wordpress.com/2017/11/15/drawing-from-noise-and-then-making-animated-loopy-gifs-from-there/">Etienne Jacob</a></p>
+
+<hr />
+
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>
