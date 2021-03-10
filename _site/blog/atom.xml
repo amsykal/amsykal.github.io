@@ -4,13 +4,460 @@
 	<title>Blog</title>
 	<link href="http://amsykal.github.io/blog/atom.xml" rel="self"/>
 	<link href="http://amsykal.github.io/blog"/>
-	<updated>2021-02-24T17:30:25+05:30</updated>
+	<updated>2021-03-10T14:21:44+05:30</updated>
 	<id>http://amsykal.github.io/blog</id>
 	<author>
 		<name>Lakshmi</name>
 		<email>a.lakshmi.s@gmail.com</email>
 	</author>
 
+	
+		<entry>
+			<title>Art with Code: Noise Based Loops and Some Reflections</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/03/08/post033.html"/>
+			<updated>2021-03-08T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/03/08/post033</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;The Universe, she’s dancing now&lt;br /&gt;
+They got her lit up, lit up on the moon&lt;br /&gt;
+They got stars doing cartwheels, all the nebulas on the tune&lt;br /&gt;
+…&lt;br /&gt;
+The Universe, she’s wounded&lt;br /&gt;
+But she’s still got infinity ahead of her&lt;br /&gt;
+She’s still got you and me&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Gregory Alan Isakov&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/033c.gif&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/033b.gif&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/033a.gif&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let simplexNoise;
+let numFrames = 200;
+// set frame rate
+let fps = 30;
+// the canvas capturer instance
+let capturer = new CCapture({ format: 'png', framerate: fps });
+
+let points = [];
+let n = 5000;
+let radius = 200;
+let colors;
+
+function setup(){
+  createCanvas(500,500,WEBGL);
+  background(10);
+
+  // for 4d noise
+  simplexNoise = new OpenSimplexNoise(Date.now());
+
+  for(let i = 0; i&amp;lt;n; i++){
+    angle = 2*PI*random(1);
+    points[i] = new PointObj4(radius,angle);
+  }
+
+  frameRate(fps);
+  // start the recording
+  capturer.start();
+}
+
+
+function draw(){
+  background(0);
+  if (frameCount &amp;gt;= numFrames){
+    noLoop();
+    capturer.stop();
+    capturer.save();
+    return;
+  }
+  render();
+  capturer.capture(document.getElementById('defaultCanvas0'));
+}
+
+
+// simplexNoise based loops
+function render(){
+  // for every point in the array display it on canvas
+  let t = 1.0*frameCount/numFrames;
+  for(let i = 0; i &amp;lt; n; i++){
+    // setting color, transperancy etc
+    let colors = [color(19, 41, 61),color(0, 100, 148),color(36, 123, 160),
+                  color(27, 152, 224)];
+    let cl = random(colors);
+    cl.setAlpha(5);
+    stroke(cl);
+    noFill();
+    strokeWeight(1);
+    points[i].show(t);
+  }
+
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// points in a rectangle of given width and height
+class PointObj4{
+
+  constructor(rad,ang){
+    // get a random point within circle of radius
+    this.x = rad*cos(ang);
+    this.y = rad*sin(ang);;
+  }
+
+  show(t){
+    // parameters that contol appearance of passage of point
+    // play around with these values
+    let r = 2;
+    let d = random([25,50,75,100]);
+    let k = 200;
+
+    let x = this.x;
+    let y = this.y;
+
+    // the color ,alpha etc has been set in the calling function
+    ellipse(x,y,1,1);
+
+    // move the point along a trajectory based on 4D simplex noise
+    for(let i = 0; i &amp;lt; k; i++){
+      let xx = d*simplexNoise.noise4D(0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+      let yy = d*simplexNoise.noise4D(100+0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+      // create a vector built from simplex noise
+      let v = new createVector(xx,yy);
+      // scale it
+      v.mult(0.15);
+      // update position of point
+      x += v.x;
+      y += v.y;
+      ellipse(x,y,1,1);
+    }
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Some old sketches.&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;reflections&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;I step out of the house. It’s around 5 in the morning.Most of the city is still sleeping and the world is silent. I look up at the stars. I spot the familiar ones. I draw imaginary lines between them. I make a star out of stars.I think about how I could do this recursively forever.I think about the majesty of universe.I think about how my great great grandmother and her great great grandmother could have been watching the same stars and wondering the same things as I am doing today.I think about how time is infinite. To be alive, to think what I am thinking, to be a witness to the wonder that is the universe,to feel one with time and space.There is something so deeply moving about this experience and I find myself in tears.All at once, my brain is completely flooded with words I have read over the years, by music I have listened to over the years, works of art I have seen over the years.&lt;/p&gt;
+
+&lt;p&gt;Words from&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.planetary.org/worlds/pale-blue-dot&quot;&gt;Carl Sagan’s famous Pale Blue Dot&lt;/a&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;Our posturings, our imagined self-importance, the delusion that we have some privileged position in the Universe, are challenged by this point of pale light. Our planet is a lonely speck in the great enveloping cosmic dark. In our obscurity, in all this vastness, there is no hint that help will come from elsewhere to save us from ourselves.&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Alan Lightman’s book &lt;a href=&quot;https://www.goodreads.com/book/show/35749415-searching-for-stars-on-an-island-in-maine&quot;&gt;Searching For Stars on an Island in Maine&lt;/a&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;On this island, I am light years away from the noise and heave of the world. Like Thoreau, I came here “because I wished to live deliberately, to front only the essential facts of life, and see if I could not learn what life had to teach, and not, when I came to die, discover that I had not lived.” I choose to live.&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Rebecca Elson’s poem &lt;a href=&quot;https://www.theguardian.com/books/booksblog/2020/mar/23/poem-of-the-week-antidotes-to-fear-of-death-by-rebecca-elson&quot;&gt;Antitode to fear of death&lt;/a&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;No outer space, just space,&lt;br /&gt;
+ The light of all the not yet stars&lt;br /&gt;
+ Drifting like a bright mist,&lt;br /&gt;
+ And all of us, and everything&lt;br /&gt;
+ Already there&lt;br /&gt;
+ But unconstrained by form.&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://vimeo.com/262836574&quot;&gt;Anna Leahy’s  poem The habit of light&lt;/a&gt; inspired by the work of Henrietta Leavitt&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;The universe is made of distance and of dust.&lt;br /&gt;
+ More dust than star out there&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.feynman.com/stories/poem-for-rpf/&quot;&gt;Feynman’s lament&lt;/a&gt; about poets who refuse to mix science and poetry,&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;What men are poets who can speak of Jupiter if he were a man, but if he is an immense spinning sphere of methane and ammonia must be silent?&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.vangoghgallery.com/painting/starry-night.html&quot;&gt;Van Gogh’s Starry Night&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/033d.jpg&quot; width=&quot;500&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.wassilykandinsky.net/work-49.php&quot;&gt;Kandinsky’s Several Circles&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/033e.jpg&quot; width=&quot;500&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;River in &lt;a href=&quot;https://store.steampowered.com/app/206440/To_the_Moon/&quot;&gt;‘To The Moon’&lt;/a&gt; (the incredibly beautiful,cathartic RPG game)&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;I’ve never told anyone, but… I’ve always thought they were lighthouses. Billions of lighthouses… … stuck at the far end of the sky…They can see all the other lighthouses out there, and they want to talk to them.  But they can’t, because they’re all too far apart to hear what the others are saying.  All they can do… is shine their lights from afar.  … So that’s what they do.  They shine their lights at the other lighthouses, and at me….Because one day… … I’m going to befriend one of them.&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In the background I am listening in my mind to &lt;a href=&quot;https://www.youtube.com/watch?v=dIwwjy4slI8&quot;&gt;Nils Frahm’s Says&lt;/a&gt; and  &lt;a href=&quot;https://www.youtube.com/watch?v=H9gFLkNdHvA&quot;&gt;Arrival of the Birds by The Cinematic Orchestra&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;So many words, so many snapshots, so many notes ..all floating by.&lt;/p&gt;
+
+&lt;p&gt;Those feelings I felt the previous day, the one before that, all the yesterdays, of hurt , bitterness ,envy, resentment, perceived injustices,the physical and mental fatigue that comes with daily drudgery of life has all but melted away.The sense of despair lifts and I feel free in a way I haven’t felt in years.&lt;/p&gt;
+
+&lt;p&gt;None of this matters.Nothing matters.I am grateful.I am grateful that I even get to be a part of all of this.To be human,to think these thoughts, to be awed and moved by nature,by the universe,by the brilliance of men and women who write so eloquently,who compose music that transcends space and time, who create works of art that is timeless, who build skyscrapers, railroads, reactors, rovers travelling millions of miles landing on another planet ,sending back pictures and videos ….. How can you not be moved.&lt;/p&gt;
+
+&lt;p&gt;For now, this is all I can afford.The duties of the day ahead beckon me.There is a house that needs cleaning ,a family that has to be fed, a parent trying to navigate a world that is so far removed from the one she grew up in,my own two waiting for a call to reassure them that all is well, two teens working hard,trying to balance academics,social life and hobbies ,a spouse figuring out his true calling.Seeing life from this vantage point, I have one of those rare epiphanies.We all have our struggles.We are all alone,together.To be empathetic without having my cup full is challenging.I am human.I have my desires.I have my flaws.I have my failures.I am not a monk.But I can reflect and forgive myself, make room for mistakes, give myself some air to breathe.&lt;/p&gt;
+
+&lt;p&gt;Later in the night ,I write all of this down , reflect some more in the quiet of the night.Life lessons, if you will.Some clichéd, yes ,but reinforcements help.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Be more forgiving of others.&lt;/li&gt;
+  &lt;li&gt;Do not let words and actions of others bother you,they don’t matter and they only hurt if you want to be hurt.&lt;/li&gt;
+  &lt;li&gt;Make ENOUGH time and space for yourself because no one else is going to do it for you. And if you don’t you will wither away and be taken for granted.&lt;/li&gt;
+  &lt;li&gt;Once you have filled your cup,lend your hand and ears but keep the spoken words limited.There is clarity in the written word - pen on paper is therapeutic.One tends to be carried away by the moment with spoken words.&lt;/li&gt;
+  &lt;li&gt;You will be old one day too.Be the kind of person your older self would want to interact with.&lt;/li&gt;
+  &lt;li&gt;Empathy, not pity&lt;/li&gt;
+  &lt;li&gt;Get back your sense of humour in life
+    &lt;blockquote&gt;
+      &lt;blockquote&gt;
+        &lt;p&gt;Humor, more than anything else in the human make-up, can afford an aloofness and an ability to rise above any situation, even if only for a few seconds … Viktor Frankl&lt;/p&gt;
+      &lt;/blockquote&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Be &lt;a href=&quot;https://www.gutenberg.org/files/16643/16643-h/16643-h.htm#SELF-RELIANCE&quot;&gt;self reliant&lt;/a&gt; but remember that seeking help when you lack clarity or knowledge is not a failure on your part.&lt;/li&gt;
+  &lt;li&gt;When conflicted, seek multiple perspectives by reading up and listening to those whom you look up to or respect, but eventually own up to the decisions you make, good or bad.&lt;/li&gt;
+  &lt;li&gt;It is the trials and tribulations that bring clarity in life.As much they drain your mental and physical energy,making even the smallest of tasks seem like an ordeal, it is these adversities that will teach you the essence of life and what you truly hold dear.&lt;/li&gt;
+  &lt;li&gt;Neither do you have to live upto the expectations of others, nor should you expect others to live upto yours.&lt;/li&gt;
+  &lt;li&gt;A part of ‘adulting’ is to come to terms with not being understood.&lt;/li&gt;
+  &lt;li&gt;Yes,most people are kind and good willed but they aren’t going to get you and that’s okay.&lt;/li&gt;
+  &lt;li&gt;Go All In.
+    &lt;blockquote&gt;
+      &lt;blockquote&gt;
+        &lt;p&gt;If you’re going to live life, you’ve got to be all in.
+Marian Diamond&lt;/p&gt;
+      &lt;/blockquote&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;And if everything fails, you have at least tried and there is always music,coding,art,books,teaching and long walks !&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;There isn’t much one needs in order to be at peace with oneself.
+I am enough.I am okay.With all due apologies to Beckett, I can go on, I will go on.&lt;/p&gt;
+
+&lt;p&gt;If I feel differently and contradict myself in future, I call upon Walt Whitman in my defence&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;Do I contradict myself?&lt;br /&gt;
+Very well then I contradict myself,&lt;br /&gt;
+(I am large, I contain multitudes.)&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
+	
+		<entry>
+			<title>What Do You Care What Other People Think</title>
+			<link href="http://amsykal.github.io/life%20lessons/2021/02/28/post032.html"/>
+			<updated>2021-02-28T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/life%20lessons/2021/02/28/post032</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;“You have no responsibility to live up to what other people think you ought to accomplish. I have no responsibility to be like they expect me to be. It’s their mistake, not my failing.”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Richard P. Feynman, Surely You’re Joking, Mr. Feynman!: Adventures of a Curious Character&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;[One] way to overcome our obsession with winning the admiration of other people is to go out of our way to do things likely to trigger their disdain. . . .Cato made a point of ignoring the dictates of fashion. . .According to Plutarch, Cato did this not because he “sought vainglory”; to the contrary , he dressed differently in order to accustom himself “to be ashamed only of what was really shameful, and to ignore men’s low opinion of other things.” In other words, Cato consciously did things to trigger the disdain of other people simply so he could practice ignoring their disdain.”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;William Irvine, A Guide to the Good Life: The Ancient Art of Stoic Joy&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Watching Now&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Qw4l1w0rkjs&amp;amp;list=PL30C13C91CFFEFEA6&amp;amp;index=3&quot;&gt;Justice: What’s The Right Thing To Do? Episode 03: “FREE TO CHOOSE”&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Flow Fields</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/02/25/post031.html"/>
+			<updated>2021-02-25T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/02/25/post031</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;‘The only way to make sense out of change is to plunge into it, move with it, and join the dance.’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Alan Wilson Watts&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031h.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031i.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031j.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031k.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031l.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/031m.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function setup() {
+  createCanvas(600, 600);
+  background(0);
+  colors = [color(46, 134, 171),color( 162, 59, 114),
+            color(255,255,255),color(199, 62, 29),color(59, 31, 43)];
+}
+
+function draw(){
+  noLoop();
+  render();
+  strokeWeight(80);
+  stroke(0);
+  noFill();
+  rect(0,0,width,height);
+}
+
+function render(){
+  let s = 10;
+  let k = 15000;
+  // color set up
+  cl = random(colors);
+  fl = random(colors);
+  for(let i = 0; i &amp;lt; k; i += 1) {
+    // color set up
+    cl.setAlpha(160);
+    fl.setAlpha(100);
+    strokeWeight(2);
+    stroke(fl);
+    fill(fl);
+
+    // get random x and y
+    x = Math.random()*width;
+    y = Math.random()*height;
+    // some sort of vector field
+    let value = ( (Math.sin(x * 0.02))**2 + (Math.sin(y * 0.02))**2) * Math.PI * 1;;
+    push();
+    translate(x, y);
+    rotate(value);
+    // try diff combos of line, ellipse etc
+    //ellipse(0,0,s,s/4);
+    line(0,0,2*s,0);
+    stroke(cl);
+    line(0,0,-s,0);
+    pop();
+
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;// points in a rectangle of given width and height
+class PointObj4{&lt;/p&gt;
+
+&lt;p&gt;constructor(rad,ang){
+    // get a random point within circle of radius
+    this.x = rad&lt;em&gt;cos(ang);
+    this.y = rad&lt;/em&gt;sin(ang);;
+  }&lt;/p&gt;
+
+&lt;p&gt;show(t){
+    // parameters that contol appearance of passage of point
+    // play around with these values
+    let r = 2;
+    let d = random([25,50,75,100]);
+    let k = 200;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let x = this.x;
+let y = this.y;
+
+// the color ,alpha etc has been set in the calling function
+ellipse(x,y,1,1);
+
+// move the point along a trajectory based on 4D simplex noise
+for(let i = 0; i &amp;lt; k; i++){
+  let xx = d*simplexNoise.noise4D(0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+  let yy = d*simplexNoise.noise4D(100+0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+  // create a vector built from simplex noise
+  let v = new createVector(xx,yy);
+  // scale it
+  v.mult(0.15);
+  // update position of point
+  x += v.x;
+  y += v.y;
+  ellipse(x,y,1,1);
+}   } }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;```&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;Some old stuff.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;REFERENCE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.bit-101.com/blog/2017/10/flow-fields-part-i/&quot;&gt;Bit 101&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+</content>
+		</entry>
 	
 		<entry>
 			<title>Art with Code: Noise Loops: Points in Rose Curves</title>
@@ -3851,6 +4298,135 @@ In order to have different lines in different cells we change the seed value.If 
 		</entry>
 	
 		<entry>
+			<title>More Than A Few Good Corners</title>
+			<link href="http://amsykal.github.io/resources%20for%20reflection/2021/01/02/post007.html"/>
+			<updated>2021-01-02T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/resources%20for%20reflection/2021/01/02/post007</id>
+			<content type="html">&lt;h4 id=&quot;blogs-and-the-likes&quot;&gt;Blogs And The Likes&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://michaelnielsen.org/&quot;&gt;Michael Nielsen&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://paulgraham.com/articles.html&quot;&gt;Paul Graham&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.aaronsw.com/weblog/&quot;&gt;Aaron Swartz&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://fs.blog/blog/&quot;&gt;Farnam Street&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://matt.might.net/articles/&quot;&gt;Matt Might&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.brainpickings.org/&quot;&gt;Brain Pickings&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.ribbonfarm.com/&quot;&gt;Ribbon Farm&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://waitbutwhy.com/&quot;&gt;Wait But Why&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.cs.virginia.edu/~robins/CS_readings.html&quot;&gt;Dr. Gabriel Robins&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/busterbenson/public/blob/master/book-of-beliefs.md&quot;&gt;Buster Benson&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://medium.com/@yegg/mental-models-i-find-repeatedly-useful-936f1cc405d&quot;&gt;Mental Models, Gabriel Weinberg&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.defmacro.org/2016/11/25/essay-reading-list.html&quot;&gt;defmacro&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://nabeelqu.co/&quot;&gt;Nabeel Qureshi&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://worrydream.com/&quot;&gt;Bret Victor&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://guzey.com/&quot;&gt;Alexey Guzey&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.nateliason.com/blog&quot;&gt;Nat Aliason&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.alfiekohn.org/&quot;&gt;Alfie Kohn&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.collaborativefund.com/blog/&quot;&gt;Morgan Housel&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.quantamagazine.org/&quot;&gt;Quanta Magazine&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://craigmod.com/essays/&quot;&gt;Craig Mod&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://andymatuschak.org/&quot;&gt;Andy Matuschak&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;lectures--talks--youtube-content&quot;&gt;Lectures / Talks / YouTube Content&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/playlist?list=PL9F0B2048DA4690AF&quot;&gt;MIT Introduction to Biology Lectures&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/playlist?list=PLYaP1u75QsCDt6gTE29X758sD7-by7U_T&quot;&gt;Integrative Biology by Professor Marian Diamond&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=kBdfcR-8hEY&amp;amp;list=PL30C13C91CFFEFEA6&quot;&gt;Justice with Michael Sandel&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.feynmanlectures.caltech.edu/&quot;&gt;Feynman Lectures , Book&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/playlist?list=PLgRI7D_FXEnrCM8T1czHfJsvbQd4V1jRc&quot;&gt;Feynman Lectures , Videos&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/playlist?list=PLFE3074A4CB751B2B&quot;&gt;Fundamentals of Physics with Ramamurti Shankar&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/playlist?list=PLD07B2225BB40E582&quot;&gt;Fundamentals of Physics II with Ramamurti Shankar&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/channel/UC6QYFutt9cluQ3uSM963_KQ&quot;&gt;Ninja Nerd Lectures Biology and Medicine&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/playlist?list=PLKruweaZqDNcTAPb0nBqGx-Ekl9k9ns-V&quot;&gt;Uncommon Knowledge: Featuring Thomas Sowell&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/channel/UCFaYLR_1aryjfB7hLrKGRaQ&quot;&gt;Michael Sugrue , mindblowing erudition&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw&quot;&gt;3Blue1Brown&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/user/numberphile&quot;&gt;Numberphile&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/channel/UCePDFpCr78_qmVtpoB1Axaw&quot;&gt;Great Art Explained&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/channel/UCo-3ThNQmPmQSQL_L6Lx1_w&quot;&gt;Deep Sky Videos&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;specific-lectures-talks-videos&quot;&gt;Specific Lectures /Talks /Videos&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Unzc731iCUY&quot;&gt;How To Speak by Patrick Winston&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=ji5_MqicxSo&quot;&gt;The Last Lecture&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=Auuk1y4DRgk&quot;&gt;Marcus Aurelius’ Meditations: The Stoic Ideal&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=cPG6nJRJeWQ&quot;&gt;When Love Arrives, Spoken Word&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=0snNB1yS3IE&quot;&gt;If I should have a daughter …Spoken Word &lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=KBAig-QT46Q&quot;&gt;I want to be, Spoken Word&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;podcasts&quot;&gt;Podcasts&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://seenunseen.in/&quot;&gt;The Seen And The Unseen&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.econtalk.org/&quot;&gt;Econ Talk&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.wnycstudios.org/podcasts/radiolab&quot;&gt;Radiolab&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.dancarlin.com/hardcore-history-series/&quot;&gt;Hardcore History by Dan Carlin&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://historyofphilosophy.net/&quot;&gt;History of Philosophy Without Any Gaps&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;coding-and-creative-coding-generative-art&quot;&gt;Coding And Creative Coding/ Generative Art&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://projecteuler.net/about&quot;&gt;Project Euler&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/terkelg/awesome-creative-coding&quot;&gt;Awesome Creative Coding&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://paulbourke.net/fractals/&quot;&gt;Paul Bourke&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://sighack.com/&quot;&gt;SigHack&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://blog.hvidtfeldts.net/index.php/generative-art-links/&quot;&gt;Generative Art Links&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://p5-demos.glitch.me/&quot;&gt;simple p5 demos&lt;/a&gt;&lt;/p&gt;
+</content>
+		</entry>
+	
+		<entry>
 			<title>Art with Code: Henon Map</title>
 			<link href="http://amsykal.github.io/art%20with%20code/2021/01/01/post006.html"/>
 			<updated>2021-01-01T00:00:00+05:30</updated>
@@ -4021,6 +4597,38 @@ $y_{n+1} = x_nsinα + (y_n-x_n^2)cosα$&lt;/p&gt;
 &lt;p&gt;&lt;a href=&quot;http://www.stevenstrogatz.com/books/nonlinear-dynamics-and-chaos-with-applications-to-physics-biology-chemistry-and-engineering&quot;&gt;Non Linear Dynamics and Chaos by Steven Strogatz&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=ycJEoqmQvwg&amp;amp;list=PLbN57C5Zdl6j_qJA-pARJnKsmROzPnO9V&quot;&gt;Steven Strogatz Lectures on Non Linear Dynamics&lt;/a&gt;&lt;/p&gt;
+</content>
+		</entry>
+	
+		<entry>
+			<title>Ratatat</title>
+			<link href="http://amsykal.github.io/music/2020/12/20/post005.html"/>
+			<updated>2020-12-20T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/music/2020/12/20/post005</id>
+			<content type="html">&lt;p&gt;When words are too much, there’s &lt;a href=&quot;https://www.youtube.com/channel/UCTcraSQKl7F8GFiLydv6eDg&quot;&gt;Ratatat&lt;/a&gt;&lt;sup&gt;&lt;a href=&quot;https://www.seattletimes.com/entertainment/when-words-are-too-much-theres-ratatat/&quot;&gt;[1]&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+</content>
+		</entry>
+	
+		<entry>
+			<title>Quiet</title>
+			<link href="http://amsykal.github.io/life%20lessons/2020/12/18/post004.html"/>
+			<updated>2020-12-18T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/life%20lessons/2020/12/18/post004</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;“Solitude matters, and for some people, it’s the air they breathe”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;“I also believe that introversion is my greatest strength. I have such a strong inner life that I’m never bored and only occasionally lonely. No matter what mayhem is happening around me, I know I can always turn inward.”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;“The highly sensitive [introverted] tend to be philosophical or spiritual in their orientation, rather than materialistic or hedonistic. They dislike small talk. They often describe themselves as creative or intuitive. They dream vividly, and can often recall their dreams the next day. They love music, nature, art, physical beauty. They feel exceptionally strong emotions–sometimes acute bouts of joy, but also sorrow, melancholy, and fear. Highly sensitive people also process information about their environments–both physical and emotional–unusually deeply. They tend to notice subtleties that others miss–another person’s shift in mood, say, or a lightbulb burning a touch too brightly.”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Susan Cain, Quiet: The Power of Introverts in a World That Can’t Stop Talking&lt;/p&gt;
+&lt;/blockquote&gt;
 </content>
 		</entry>
 	
