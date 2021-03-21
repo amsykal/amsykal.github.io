@@ -4,13 +4,637 @@
 	<title>Blog</title>
 	<link href="http://amsykal.github.io/blog/atom.xml" rel="self"/>
 	<link href="http://amsykal.github.io/blog"/>
-	<updated>2021-03-11T05:02:13+05:30</updated>
+	<updated>2021-03-18T17:56:26+05:30</updated>
 	<id>http://amsykal.github.io/blog</id>
 	<author>
 		<name>Lakshmi</name>
 		<email>a.lakshmi.s@gmail.com</email>
 	</author>
 
+	
+		<entry>
+			<title>Art with Code: Hexagonal Gosper using the Lindenmayer Systems</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/03/18/post037.html"/>
+			<updated>2021-03-18T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/03/18/post037</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;A surprising proportion of mathematicians are accomplished
+  musicians.Is it because music and mathematics share patterns
+  that are beautiful?”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Martin Gardner&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/037b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/037c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/037a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//Hexagonal Gosper
+//From Paul Bourke
+//Attributed to Mandelbrot, 1982
+
+let axiom = 'XF';
+let sentence = axiom;
+let angle = Math.PI/3;
+let len = 5;
+let rules = [];
+let colors;
+
+rules[0] = {
+  a: 'X',
+  b: 'X+YF++YF-FX--FXFX-YF+'
+};
+
+rules[1] = {
+  a: 'Y',
+  b: '-FX+YFYF++YF+FX--FX-Y'
+};
+
+
+function setup(){
+  createCanvas(600,600);
+  colors = [color(14, 62, 221),color(166, 45, 197),
+            color(255, 98, 15),color(255, 28, 32),
+            color(17, 166, 47),color(255, 233, 0),color(254, 62, 139),
+            color(112, 205, 255),color(0, 191, 191)];
+  createP(axiom);
+  render();
+  let button = createButton('generate');
+  button.mousePressed(generate);
+}
+
+function generate(){
+  // get the next generation
+  let nextSentence = '';
+  for(let i = 0; i &amp;lt; sentence.length; i++){
+    currentChar = sentence.charAt(i);
+    let found = false;
+    for(let j = 0; j &amp;lt; rules.length; j++){
+      if (currentChar == rules[j].a){
+        nextSentence += rules[j].b;
+        found = true;
+        break;
+      }
+    }
+    if (!found){
+      nextSentence += currentChar;
+    }
+  }
+  sentence = nextSentence;
+  // draw the next generation
+  render();
+
+}
+
+
+function render(){
+  push();
+
+  //background(128,0,0);
+  background(0);
+  translate(width-30,height/2.75);
+  len *= 1;
+
+  for(let i = 0; i &amp;lt; sentence.length; i++){
+
+
+    currentChar = sentence.charAt(i);
+
+    if(currentChar == '+'){
+      rotate(-angle);
+    }
+    else if (currentChar == '-'){
+      rotate(angle);
+    }
+    else if (currentChar == '['){
+      push();
+    }
+    else if (currentChar == ']'){
+      pop();
+    }
+    else {
+      strokeWeight(5);
+      let cl = random(colors);
+      cl.setAlpha(220);
+      fill(cl);
+      //line(len,len,0,-len);
+      stroke(cl);
+      line(0,0,0,-len);
+      //ellipse(0,0,-1.5*len,-3*len);
+      translate(0,-len);
+    }
+  }
+  pop();
+}
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Some sketches based on Lindenmayer Systems.
+This is based on &lt;a href=&quot;http://paulbourke.net/fractals/lsys/&quot;&gt;Paul Bourke’s L-System Hexagonal Gosper&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;references&quot;&gt;REFERENCES&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://paulbourke.net/fractals/lsys/&quot;&gt;Paul Bourke&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://thecodingtrain.com/CodingChallenges/016-lsystem.html&quot;&gt;Coding Train&lt;/a&gt;&lt;/p&gt;
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Classic Sierpinski Curve using the Lindenmayer Systems</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/03/17/post036.html"/>
+			<updated>2021-03-17T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/03/17/post036</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Nature builds up her refined and invisible architecture, with a delicacy eluding our conception, yet with a symmetry and beauty which we are never weary of admiring.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;John Herschel&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/036a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/036b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/036d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/036e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let axiom = '-D--D';
+let sentence = axiom;
+let angle = Math.PI/4;
+let len = 20;
+let rules = [];
+let colors;
+
+rules[0] = {
+  a: 'A',
+  b: 'F++FFFF--F--FFFF++F++FFFF--F'
+};
+
+rules[1] = {
+  a: 'B',
+  b: 'F--FFFF++F++FFFF--F--FFFF++F'
+};
+
+rules[2] = {
+  a: 'C',
+  b: 'BFA--BFA'
+};
+
+rules[3] = {
+  a: 'D',
+  b: 'CFC--CFC'
+};
+
+function setup(){
+  createCanvas(600,600);
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+  createP(axiom);
+  render();
+  let button = createButton('generate');
+  button.mousePressed(generate);
+}
+
+function generate(){
+  // get the next generation
+  let nextSentence = '';
+  for(let i = 0; i &amp;lt; sentence.length; i++){
+    currentChar = sentence.charAt(i);
+    let found = false;
+    for(let j = 0; j &amp;lt; rules.length; j++){
+      if (currentChar == rules[j].a){
+        nextSentence += rules[j].b;
+        found = true;
+        break;
+      }
+    }
+    if (!found){
+      nextSentence += currentChar;
+    }
+  }
+  sentence = nextSentence;
+  // draw the next generation
+  render();
+
+}
+
+
+function render(){
+  push();
+
+  //background(128,0,0);
+  background(50);
+  translate(20,height/2);
+  len *= 1;
+
+  for(let i = 0; i &amp;lt; sentence.length; i++){
+
+    strokeWeight(2);
+    stroke(255);
+    noFill();
+
+    currentChar = sentence.charAt(i);
+
+    if(currentChar == '+'){
+      rotate(-angle);
+    }
+    else if (currentChar == '-'){
+      rotate(angle);
+    }
+    else if (currentChar == '['){
+      push();
+    }
+    else if (currentChar == ']'){
+      pop();
+    }
+    else {
+
+      //line(0,0,0,-len);
+      let cl = random(colors);
+      cl.setAlpha(100);
+      fill(cl);
+      //rect(0,0,-len/2,-len/2);
+      stroke(0);
+      //rect(0,0,-len/4,-len);
+      //rect(0,0,-len/2,-len);
+      ellipse(0,0,-len/4,-len);
+
+      ellipse(0,0,-len/2,-len);
+      translate(0,-len);
+
+    }
+  }
+  pop();
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Some sketches based on Lindenmayer Systems.
+This is based on &lt;a href=&quot;http://paulbourke.net/fractals/lsys/&quot;&gt;Paul Bourke’s L-System Classic Sierpinski Curve&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;references&quot;&gt;REFERENCES&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://paulbourke.net/fractals/lsys/&quot;&gt;Paul Bourke&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://thecodingtrain.com/CodingChallenges/016-lsystem.html&quot;&gt;Coding Train&lt;/a&gt;&lt;/p&gt;
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Kolam using the Lindenmayer Systems</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/03/17/post035.html"/>
+			<updated>2021-03-17T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/03/17/post035</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;The mathematical sciences particularly exhibit order, symmetry, and limitation; and these are the greatest forms of the beautiful&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Aristotle&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/035a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/035b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/035c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/035d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/035e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/035f.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let axiom = '-D--D';
+let sentence = axiom;
+let angle = Math.PI/4;
+let len = 20;
+let rules = [];
+let colors;
+
+rules[0] = {
+  a: 'A',
+  b: 'F++FFFF--F--FFFF++F++FFFF--F'
+};
+
+rules[1] = {
+  a: 'B',
+  b: 'F--FFFF++F++FFFF--F--FFFF++F'
+};
+
+rules[2] = {
+  a: 'C',
+  b: 'BFA--BFA'
+};
+
+rules[3] = {
+  a: 'D',
+  b: 'CFC--CFC'
+};
+
+function setup(){
+  createCanvas(600,600);
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+  createP(axiom);
+  render();
+  let button = createButton('generate');
+  button.mousePressed(generate);
+}
+
+function generate(){
+  // get the next generation
+  let nextSentence = '';
+  for(let i = 0; i &amp;lt; sentence.length; i++){
+    currentChar = sentence.charAt(i);
+    let found = false;
+    for(let j = 0; j &amp;lt; rules.length; j++){
+      if (currentChar == rules[j].a){
+        nextSentence += rules[j].b;
+        found = true;
+        break;
+      }
+    }
+    if (!found){
+      nextSentence += currentChar;
+    }
+  }
+  sentence = nextSentence;
+  // draw the next generation
+  render();
+
+}
+
+
+function render(){
+  push();
+
+  //background(128,0,0);
+  background(50);
+  translate(20,height/2);
+  len *= 1;
+
+  for(let i = 0; i &amp;lt; sentence.length; i++){
+
+    strokeWeight(2);
+    stroke(255);
+    noFill();
+
+    currentChar = sentence.charAt(i);
+
+    if(currentChar == '+'){
+      rotate(-angle);
+    }
+    else if (currentChar == '-'){
+      rotate(angle);
+    }
+    else if (currentChar == '['){
+      push();
+    }
+    else if (currentChar == ']'){
+      pop();
+    }
+    else {
+
+      //line(0,0,0,-len);
+      let cl = random(colors);
+      cl.setAlpha(100);
+      fill(cl);
+      //rect(0,0,-len/2,-len/2);
+      stroke(0);
+      //rect(0,0,-len/4,-len);
+      //rect(0,0,-len/2,-len);
+      ellipse(0,0,-len/4,-len);
+
+      ellipse(0,0,-len/2,-len);
+      translate(0,-len);
+
+    }
+  }
+  pop();
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Some sketches based on Lindenmayer Systems.
+This is based on &lt;a href=&quot;http://paulbourke.net/fractals/lsys/&quot;&gt;Paul Bourke’s L-System Kolam&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;em&gt;They give birth astride of a grave, the light gleams an instant, then it’s night once more.&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;em&gt;Samuel Beckett&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;references&quot;&gt;REFERENCES&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://paulbourke.net/fractals/lsys/&quot;&gt;Paul Bourke&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://thecodingtrain.com/CodingChallenges/016-lsystem.html&quot;&gt;Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Kolam&quot;&gt;Kolam&lt;/a&gt;&lt;/p&gt;
+</content>
+		</entry>
+	
+		<entry>
+			<title>Art with Code: Lindenmayer Systems</title>
+			<link href="http://amsykal.github.io/art%20with%20code/2021/03/16/post034.html"/>
+			<updated>2021-03-16T00:00:00+05:30</updated>
+			<id>http://amsykal.github.io/art%20with%20code/2021/03/16/post034</id>
+			<content type="html">&lt;blockquote&gt;
+  &lt;p&gt;Through the corridors of sleep&lt;br /&gt;
+Past shadows dark and deep&lt;br /&gt;
+My mind dances and leaps in confusion&lt;br /&gt;
+I don’t know what is real&lt;br /&gt;
+I can’t touch what I feel&lt;br /&gt;
+And I hide behind the shield of my illusion&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;So I’ll continue to continue to pretend&lt;br /&gt;
+My life will never end&lt;br /&gt;
+And flowers never bend with the rainfall&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Simon &amp;amp; Garfunkel&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/034c.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/034b.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/034a.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/034d.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/034e.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;CODE FOR THIS SERIES OF SKETCHES&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let colors;
+let axiom = 'F';
+let sentence = axiom;
+let angle = Math.PI/8;
+let len = 10;
+let rules = [];
+
+// L system rule
+rules[0] = {
+  a: 'F',
+  b: 'FF+[+F-F-F]-[-F+F+F]'
+};
+
+
+function setup(){
+  createCanvas(600,600);
+  colors1 = [color(86, 163, 166),color(72, 69, 56),color(02, 212, 157),
+            color(212, 234, 200),color(192, 216, 224)];
+  render();
+  // control generation number
+  // every click generates the next iteration
+  let button = createButton('generate');
+  button.mousePressed(generate);
+}
+
+function generate(){
+  // get the next generation
+  let nextSentence = '';
+  for(let i = 0; i &amp;lt; sentence.length; i++){
+    currentChar = sentence.charAt(i);
+    let found = false;
+    for(let j = 0; j &amp;lt; rules.length; j++){
+      if (currentChar == rules[j].a){
+        nextSentence += rules[j].b;
+        found = true;
+        break;
+      }
+    }
+    if (!found){
+      nextSentence += currentChar;
+    }
+  }
+  sentence = nextSentence;
+  // draw the next generation
+  render();
+
+}
+
+
+function render(){
+  push();
+  //background(220, 234, 133);
+  //background(255, 245, 170);
+  background(0);
+  translate(width/2,height);
+  len *= 1;
+
+  for(let i = 0; i &amp;lt; sentence.length; i++){
+
+    currentChar = sentence.charAt(i);
+    if (currentChar == 'F'){
+      // set up colors etc
+      let cl1 = random(colors4);
+      cl1.setAlpha(100);
+      stroke(cl1);
+      fill(cl1);
+      strokeWeight(2);
+      // draw the stuff
+      // try line/ellipse/rectangle - different lengths etc
+      ellipse(0,0,-0.7*len,-1.8*len);
+      stroke(0,100);
+      strokeWeight(2);
+      line(0,-1*len,0,0.5*len);
+      // move point next location fromw which to draw
+      translate(0,-len);
+    }
+    // rotations
+    else if(currentChar == '+'){
+      rotate(-angle);
+    }
+    else if (currentChar == '-'){
+      rotate(angle);
+    }
+    else if (currentChar == '['){
+      push();
+    }
+    else if (currentChar == ']'){
+      pop();
+    }
+  }
+  pop();
+}
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Some sketches based on Lindenmayer Systems.
+This is based on one of &lt;a href=&quot;http://paulbourke.net/fractals/lsys/&quot;&gt;Paul Bourke’s L-System Bushes&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;If one wants to go down the rabbit hole of algorithmic beauty of plants, &lt;a href=&quot;http://algorithmicbotany.org/&quot;&gt;Algorithmic Botany&lt;/a&gt; is a fantastic resource.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;references&quot;&gt;REFERENCES&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://paulbourke.net/fractals/lsys/&quot;&gt;Paul Bourke&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://thecodingtrain.com/CodingChallenges/016-lsystem.html&quot;&gt;Coding Train&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://algorithmicbotany.org/&quot;&gt;Algorithmic Botany&lt;/a&gt;&lt;/p&gt;
+</content>
+		</entry>
 	
 		<entry>
 			<title>Art with Code: Noise Based Loops and Some Reflections</title>
@@ -155,7 +779,7 @@ class PointObj4{
 
 &lt;p&gt;&lt;strong&gt;reflections&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;I step out of the house. It’s around 5 in the morning.Most of the city is still sleeping and the world is silent. I look up at the stars. I spot the familiar ones. I draw imaginary lines between them. I make a star out of stars.I think about how I could do this recursively forever.I think about the majesty of universe.I think about how my great great grandmother and her great great grandmother could have been watching the same stars and wondering the same things as I am doing today.I think about how time is infinite. To be alive, to think what I am thinking, to be a witness to the wonder that is the universe,to feel one with time and space.There is something so deeply moving about this experience and I find myself in tears.All at once, my brain is completely flooded with words I have read over the years, music I have listened to over the years, works of art I have seen over the years.&lt;/p&gt;
+&lt;p&gt;I step out of the house. It’s around 5 in the morning.Most of the city is still asleep and the world is silent.I look up at the sky lit up with stars. I spot the familiar ones. I draw imaginary lines between them. I make a star out of stars.I think about how I could do this recursively forever.I think about the majesty of universe.I think about how my great great grandmother and her great great grandmother could have been watching the same stars and wondering the same things as I am doing today.I think about how time is infinite. To be alive, to think what I am thinking, to be a witness to the wonder that is the universe,to feel one with time and space.There is something so deeply moving about this experience and I find myself in tears.All at once, my brain is completely flooded with words I have read over the years, music I have listened to over the years, works of art I have seen over the years.&lt;/p&gt;
 
 &lt;p&gt;Words from&lt;/p&gt;
 
@@ -236,7 +860,8 @@ class PointObj4{
 &lt;ul&gt;
   &lt;li&gt;Be more forgiving of others.&lt;/li&gt;
   &lt;li&gt;Do not let words and actions of others bother you,they don’t matter and they only hurt if you want to be hurt.&lt;/li&gt;
-  &lt;li&gt;Make ENOUGH time and space for yourself because no one else is going to do it for you. And if you don’t ,you will wither away and be taken for granted.You have to keep some distance and draw some boundaries if you do not want to lose your sanity.&lt;/li&gt;
+  &lt;li&gt;Make ENOUGH time and space for yourself because no one else is going to do it for you. And if you don’t ,you will wither away and be taken for granted.&lt;/li&gt;
+  &lt;li&gt;It is possible and essential to carve out a space you can retreat yourself to, when you feel overwhelmed.It is NOT SELFISH to do this.(The idea of putting on the your oxygen mask first)&lt;/li&gt;
   &lt;li&gt;Once you have filled your cup,only then lend your hand and ears but keep the spoken words limited.&lt;/li&gt;
   &lt;li&gt;There is clarity in the written word - pen on paper is therapeutic.One tends to be carried away by the moment with spoken words.&lt;/li&gt;
   &lt;li&gt;Some people are impossible to please and you will always fall short - that’s not your problem.&lt;/li&gt;
@@ -408,44 +1033,47 @@ function render(){
 }
 
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;// points in a rectangle of given width and height
-class PointObj4{&lt;/p&gt;
+&lt;hr /&gt;
 
-&lt;p&gt;constructor(rad,ang){
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// points in a rectangle of given width and height
+class PointObj4{
+
+  constructor(rad,ang){
     // get a random point within circle of radius
-    this.x = rad&lt;em&gt;cos(ang);
-    this.y = rad&lt;/em&gt;sin(ang);;
-  }&lt;/p&gt;
+    this.x = rad*cos(ang);
+    this.y = rad*sin(ang);;
+  }
 
-&lt;p&gt;show(t){
+  show(t){
     // parameters that contol appearance of passage of point
     // play around with these values
     let r = 2;
     let d = random([25,50,75,100]);
-    let k = 200;&lt;/p&gt;
+    let k = 200;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;let x = this.x;
-let y = this.y;
+    let x = this.x;
+    let y = this.y;
 
-// the color ,alpha etc has been set in the calling function
-ellipse(x,y,1,1);
+    // the color ,alpha etc has been set in the calling function
+    ellipse(x,y,1,1);
 
-// move the point along a trajectory based on 4D simplex noise
-for(let i = 0; i &amp;lt; k; i++){
-  let xx = d*simplexNoise.noise4D(0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
-  let yy = d*simplexNoise.noise4D(100+0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
-  // create a vector built from simplex noise
-  let v = new createVector(xx,yy);
-  // scale it
-  v.mult(0.15);
-  // update position of point
-  x += v.x;
-  y += v.y;
-  ellipse(x,y,1,1);
-}   } }
+    // move the point along a trajectory based on 4D simplex noise
+    for(let i = 0; i &amp;lt; k; i++){
+      let xx = d*simplexNoise.noise4D(0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+      let yy = d*simplexNoise.noise4D(100+0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+      // create a vector built from simplex noise
+      let v = new createVector(xx,yy);
+      // scale it
+      v.mult(0.15);
+      // update position of point
+      x += v.x;
+      y += v.y;
+      ellipse(x,y,1,1);
+    }
+  }
+}
+
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;```&lt;/p&gt;
 &lt;hr /&gt;
 
 &lt;p&gt;Some old stuff.&lt;/p&gt;
@@ -4370,7 +4998,7 @@ In order to have different lines in different cells we change the seed value.If 
 
 &lt;p&gt;&lt;a href=&quot;https://www.youtube.com/playlist?list=PLKruweaZqDNcTAPb0nBqGx-Ekl9k9ns-V&quot;&gt;Uncommon Knowledge: Featuring Thomas Sowell&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/channel/UCFaYLR_1aryjfB7hLrKGRaQ&quot;&gt;Michael Sugrue , mindblowing erudition&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/channel/UCFaYLR_1aryjfB7hLrKGRaQ&quot;&gt;Michael Sugrue, Western Thought and Philosophy&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw&quot;&gt;3Blue1Brown&lt;/a&gt;&lt;/p&gt;
 
@@ -4393,8 +5021,6 @@ In order to have different lines in different cells we change the seed value.If 
 &lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=cPG6nJRJeWQ&quot;&gt;When Love Arrives, Spoken Word&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=0snNB1yS3IE&quot;&gt;If I should have a daughter …Spoken Word &lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=KBAig-QT46Q&quot;&gt;I want to be, Spoken Word&lt;/a&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 

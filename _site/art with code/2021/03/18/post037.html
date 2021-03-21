@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Hexagonal Gosper using the Lindenmayer Systems</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Hexagonal Gosper using the Lindenmayer Systems</h1>
+<p class="meta">18 Mar 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>A surprising proportion of mathematicians are accomplished
+  musicians.Is it because music and mathematics share patterns
+  that are beautiful?”</p>
+</blockquote>
+
+<blockquote>
+  <p>Martin Gardner</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/037b.png" /></p>
+
+<p><img src="/images/037c.png" /></p>
+
+<p><img src="/images/037a.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//Hexagonal Gosper
+//From Paul Bourke
+//Attributed to Mandelbrot, 1982
+
+let axiom = 'XF';
+let sentence = axiom;
+let angle = Math.PI/3;
+let len = 5;
+let rules = [];
+let colors;
+
+rules[0] = {
+  a: 'X',
+  b: 'X+YF++YF-FX--FXFX-YF+'
+};
+
+rules[1] = {
+  a: 'Y',
+  b: '-FX+YFYF++YF+FX--FX-Y'
+};
+
+
+function setup(){
+  createCanvas(600,600);
+  colors = [color(14, 62, 221),color(166, 45, 197),
+            color(255, 98, 15),color(255, 28, 32),
+            color(17, 166, 47),color(255, 233, 0),color(254, 62, 139),
+            color(112, 205, 255),color(0, 191, 191)];
+  createP(axiom);
+  render();
+  let button = createButton('generate');
+  button.mousePressed(generate);
+}
+
+function generate(){
+  // get the next generation
+  let nextSentence = '';
+  for(let i = 0; i &lt; sentence.length; i++){
+    currentChar = sentence.charAt(i);
+    let found = false;
+    for(let j = 0; j &lt; rules.length; j++){
+      if (currentChar == rules[j].a){
+        nextSentence += rules[j].b;
+        found = true;
+        break;
+      }
+    }
+    if (!found){
+      nextSentence += currentChar;
+    }
+  }
+  sentence = nextSentence;
+  // draw the next generation
+  render();
+
+}
+
+
+function render(){
+  push();
+
+  //background(128,0,0);
+  background(0);
+  translate(width-30,height/2.75);
+  len *= 1;
+
+  for(let i = 0; i &lt; sentence.length; i++){
+
+
+    currentChar = sentence.charAt(i);
+
+    if(currentChar == '+'){
+      rotate(-angle);
+    }
+    else if (currentChar == '-'){
+      rotate(angle);
+    }
+    else if (currentChar == '['){
+      push();
+    }
+    else if (currentChar == ']'){
+      pop();
+    }
+    else {
+      strokeWeight(5);
+      let cl = random(colors);
+      cl.setAlpha(220);
+      fill(cl);
+      //line(len,len,0,-len);
+      stroke(cl);
+      line(0,0,0,-len);
+      //ellipse(0,0,-1.5*len,-3*len);
+      translate(0,-len);
+    }
+  }
+  pop();
+}
+
+
+</code></pre></div></div>
+
+<hr />
+
+<p>Some sketches based on Lindenmayer Systems.
+This is based on <a href="http://paulbourke.net/fractals/lsys/">Paul Bourke’s L-System Hexagonal Gosper</a></p>
+
+<hr />
+
+<h4 id="references">REFERENCES</h4>
+
+<p><a href="http://paulbourke.net/fractals/lsys/">Paul Bourke</a></p>
+
+<p><a href="https://thecodingtrain.com/CodingChallenges/016-lsystem.html">Coding Train</a></p>
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

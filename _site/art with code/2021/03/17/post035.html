@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Art with Code: Kolam using the Lindenmayer Systems</title>
+			<!-- link to main stylesheet -->
+			<link rel="stylesheet" type="text/css" href="/css/main.css">
+			<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$']],
+      processEscapes: true
+    }
+  });
+</script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+		</head>
+		<body>
+			<nav>
+	    		<ul>
+	        		<li><a href="/">About</a></li>
+	        		<li><a href="/blog/">Blog</a></li>
+	    		</ul>
+			</nav>
+			<div class="container">
+
+			<h1>Art with Code: Kolam using the Lindenmayer Systems</h1>
+<p class="meta">17 Mar 2021</p>
+
+<div class="post">
+  <blockquote>
+  <p>The mathematical sciences particularly exhibit order, symmetry, and limitation; and these are the greatest forms of the beautiful</p>
+</blockquote>
+
+<blockquote>
+  <p>Aristotle</p>
+</blockquote>
+
+<hr />
+
+<p><img src="/images/035a.png" /></p>
+
+<p><img src="/images/035b.png" /></p>
+
+<p><img src="/images/035c.png" /></p>
+
+<p><img src="/images/035d.png" /></p>
+
+<p><img src="/images/035e.png" /></p>
+
+<p><img src="/images/035f.png" /></p>
+
+<hr />
+
+<p><strong>CODE FOR THIS SERIES OF SKETCHES</strong></p>
+<hr />
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let axiom = '-D--D';
+let sentence = axiom;
+let angle = Math.PI/4;
+let len = 20;
+let rules = [];
+let colors;
+
+rules[0] = {
+  a: 'A',
+  b: 'F++FFFF--F--FFFF++F++FFFF--F'
+};
+
+rules[1] = {
+  a: 'B',
+  b: 'F--FFFF++F++FFFF--F--FFFF++F'
+};
+
+rules[2] = {
+  a: 'C',
+  b: 'BFA--BFA'
+};
+
+rules[3] = {
+  a: 'D',
+  b: 'CFC--CFC'
+};
+
+function setup(){
+  createCanvas(600,600);
+  colors = [color(208, 0, 0),color(255, 186, 8),
+            color(221, 225, 230),color(63, 136, 197)];
+  createP(axiom);
+  render();
+  let button = createButton('generate');
+  button.mousePressed(generate);
+}
+
+function generate(){
+  // get the next generation
+  let nextSentence = '';
+  for(let i = 0; i &lt; sentence.length; i++){
+    currentChar = sentence.charAt(i);
+    let found = false;
+    for(let j = 0; j &lt; rules.length; j++){
+      if (currentChar == rules[j].a){
+        nextSentence += rules[j].b;
+        found = true;
+        break;
+      }
+    }
+    if (!found){
+      nextSentence += currentChar;
+    }
+  }
+  sentence = nextSentence;
+  // draw the next generation
+  render();
+
+}
+
+
+function render(){
+  push();
+
+  //background(128,0,0);
+  background(50);
+  translate(20,height/2);
+  len *= 1;
+
+  for(let i = 0; i &lt; sentence.length; i++){
+
+    strokeWeight(2);
+    stroke(255);
+    noFill();
+
+    currentChar = sentence.charAt(i);
+
+    if(currentChar == '+'){
+      rotate(-angle);
+    }
+    else if (currentChar == '-'){
+      rotate(angle);
+    }
+    else if (currentChar == '['){
+      push();
+    }
+    else if (currentChar == ']'){
+      pop();
+    }
+    else {
+
+      //line(0,0,0,-len);
+      let cl = random(colors);
+      cl.setAlpha(100);
+      fill(cl);
+      //rect(0,0,-len/2,-len/2);
+      stroke(0);
+      //rect(0,0,-len/4,-len);
+      //rect(0,0,-len/2,-len);
+      ellipse(0,0,-len/4,-len);
+
+      ellipse(0,0,-len/2,-len);
+      translate(0,-len);
+
+    }
+  }
+  pop();
+}
+
+</code></pre></div></div>
+
+<hr />
+
+<p>Some sketches based on Lindenmayer Systems.
+This is based on <a href="http://paulbourke.net/fractals/lsys/">Paul Bourke’s L-System Kolam</a></p>
+
+<hr />
+
+<blockquote>
+  <p><em>They give birth astride of a grave, the light gleams an instant, then it’s night once more.</em></p>
+</blockquote>
+
+<blockquote>
+  <p><em>Samuel Beckett</em></p>
+</blockquote>
+
+<hr />
+
+<h4 id="references">REFERENCES</h4>
+
+<p><a href="http://paulbourke.net/fractals/lsys/">Paul Bourke</a></p>
+
+<p><a href="https://thecodingtrain.com/CodingChallenges/016-lsystem.html">Coding Train</a></p>
+
+<p><a href="https://en.wikipedia.org/wiki/Kolam">Kolam</a></p>
+
+</div>
+
+
+    </div><!-- /.container -->
+
+		<footer>
+        <ul>
+            <li><a href="mailto:amsy.kal@gmail.com">email</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>

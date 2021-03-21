@@ -115,44 +115,47 @@ function render(){
 }
 
 </code></pre></div></div>
-<p>// points in a rectangle of given width and height
-class PointObj4{</p>
+<hr />
 
-<p>constructor(rad,ang){
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// points in a rectangle of given width and height
+class PointObj4{
+
+  constructor(rad,ang){
     // get a random point within circle of radius
-    this.x = rad<em>cos(ang);
-    this.y = rad</em>sin(ang);;
-  }</p>
+    this.x = rad*cos(ang);
+    this.y = rad*sin(ang);;
+  }
 
-<p>show(t){
+  show(t){
     // parameters that contol appearance of passage of point
     // play around with these values
     let r = 2;
     let d = random([25,50,75,100]);
-    let k = 200;</p>
+    let k = 200;
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let x = this.x;
-let y = this.y;
+    let x = this.x;
+    let y = this.y;
 
-// the color ,alpha etc has been set in the calling function
-ellipse(x,y,1,1);
+    // the color ,alpha etc has been set in the calling function
+    ellipse(x,y,1,1);
 
-// move the point along a trajectory based on 4D simplex noise
-for(let i = 0; i &lt; k; i++){
-  let xx = d*simplexNoise.noise4D(0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
-  let yy = d*simplexNoise.noise4D(100+0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
-  // create a vector built from simplex noise
-  let v = new createVector(xx,yy);
-  // scale it
-  v.mult(0.15);
-  // update position of point
-  x += v.x;
-  y += v.y;
-  ellipse(x,y,1,1);
-}   } }
+    // move the point along a trajectory based on 4D simplex noise
+    for(let i = 0; i &lt; k; i++){
+      let xx = d*simplexNoise.noise4D(0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+      let yy = d*simplexNoise.noise4D(100+0.01*x,0.01*y,r*cos(2*PI*t),r*sin(2*PI*t));
+      // create a vector built from simplex noise
+      let v = new createVector(xx,yy);
+      // scale it
+      v.mult(0.15);
+      // update position of point
+      x += v.x;
+      y += v.y;
+      ellipse(x,y,1,1);
+    }
+  }
+}
+
 </code></pre></div></div>
-
-<p>```</p>
 <hr />
 
 <p>Some old stuff.</p>
